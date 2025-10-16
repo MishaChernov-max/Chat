@@ -8,24 +8,24 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import { enrichUsersWithOnlineStatus } from "./enrichUsersWithOnlineStatus";
 import type { userType } from "../../api/users";
+import type { MessageType } from "../Message/Message";
 
 type ChatListPanelType = {
   sx?: SxProps;
+  handleOnClick?: () => {
+    handleClick: (_id: string, forwardMessage?: MessageType) => void;
+  };
 };
 
-function ChatListPanel({ sx }: ChatListPanelType) {
+function ChatListPanel({ sx, handleOnClick }: ChatListPanelType) {
   const { chats } = useSelector((state: RootState) => state.searchSlice);
   let sortedChats: userType[] = [];
   const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
-  console.log("onlineUsers", onlineUsers);
   const { isLoading, isError, users } = useFetchChats();
   if (chats.length > 0) {
     sortedChats = enrichUsersWithOnlineStatus(chats, onlineUsers);
   }
   const sortedUsers = enrichUsersWithOnlineStatus(users, onlineUsers);
-  console.log(sortedUsers, "sortedUsers");
-
-  console.log("usersssss", users);
   return (
     <>
       <Box
@@ -54,9 +54,9 @@ function ChatListPanel({ sx }: ChatListPanelType) {
         <ChatFilterTabs />
         <StatusWrapper isError={isError} isLoading={isLoading}>
           {chats.length > 0 ? (
-            <Chats chats={sortedChats} />
+            <Chats chats={sortedChats} handleOnClick={handleOnClick} />
           ) : (
-            <Chats chats={sortedUsers} />
+            <Chats chats={sortedUsers} handleOnClick={handleOnClick} />
           )}
         </StatusWrapper>
       </Box>

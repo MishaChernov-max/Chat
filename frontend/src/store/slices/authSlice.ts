@@ -20,7 +20,6 @@ export type authSliceType = {
   user: userType | null;
   isLoading: boolean;
   isError: string | null;
-  updatedUser: updateUserTypeResponse | null;
 };
 
 export type registerUserResponseType = {
@@ -54,12 +53,12 @@ export const setUserName = createAsyncThunk<
   }
 });
 
-// const initialState: authSliceType = {
-//   user: null,
-//   isLoading: false,
-//   isError: null,
-//   isConnected: false,
-// };
+const initialState: authSliceType = {
+  user: null,
+  isLoading: false,
+  isError: null,
+  isConnected: false,
+};
 
 const authSlice = createSlice({
   name: "auth",

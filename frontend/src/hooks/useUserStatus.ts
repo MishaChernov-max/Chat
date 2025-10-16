@@ -11,17 +11,11 @@ export const useUserTyping = (chatPartnerId: string) => {
         setIsTyping(true);
       }
     });
-
     socket?.on("user-stop", ({ userId }) => {
       if (userId === chatPartnerId) {
         setIsTyping(false);
       }
     });
-
-    return () => {
-      socket?.off("user-typing");
-      socket?.off("user-stop");
-    };
   }, [socket, chatPartnerId]);
 
   return isTyping;

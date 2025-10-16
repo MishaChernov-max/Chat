@@ -7,7 +7,6 @@ import { useParams } from "react-router-dom";
 function ChatWindow() {
   const params = useParams();
   const id = params.id?.replace(":", "") || "";
-  console.log("params", id);
   return (
     <>
       <Box

@@ -18,6 +18,7 @@ import { reducer as authSlice } from "./slices/authSlice";
 import { reducer as onlineUsersSlice } from "./slices/onlineUsersSlice";
 import { reducer as searchChatsSlice } from "./slices/searchSlice";
 import { reducer as notificationSlice } from "./slices/notificationSlice";
+import { reducer as ForwardMessagesSlice } from "./slices/forwardMessageSlice";
 
 export type AppStore = typeof store;
 
@@ -34,6 +35,7 @@ export const reducers = combineReducers({
   onlineUsers: onlineUsersSlice,
   searchSlice: searchChatsSlice,
   notifications: notificationSlice,
+  forwardMessage: ForwardMessagesSlice,
 });
 
 const persistConfig = {

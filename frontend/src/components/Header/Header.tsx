@@ -24,7 +24,7 @@ function Header({ id }: HeaderType) {
   console.log("status", status);
   const { isLoading, isError, user } = useGetUserInformation(id);
   const isTyping = useUserTyping(id);
-
+  console.log("isTyping в Header", isTyping);
   return (
     <>
       <Box
@@ -50,9 +50,8 @@ function Header({ id }: HeaderType) {
             </Button>
             <Stack direction="column" sx={{ alignItems: "flex-start" }}>
               <Typography variant="h5" component="h5">
-                {user?.email}
+                {isTyping ? <span>Печатает...</span> : user?.email}
               </Typography>
-              {isTyping && <span>Печатает....</span>}
               <ConnectionStatusWrapper isConnected={status} />
             </Stack>
           </Stack>

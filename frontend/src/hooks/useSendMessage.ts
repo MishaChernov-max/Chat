@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import type { MessageType } from "../components/Message/Message";
 import { useSocket } from "../store/context/SocketContext";
 import type { RootState } from "../store";
+import useActions from "./useActions";
 
 export type messagePayloadType = {
   roomId: string;
@@ -9,6 +10,7 @@ export type messagePayloadType = {
 };
 
 export const useSendMessage = () => {
+  const { markLoading } = useActions();
   const socket = useSocket();
   const { roomId } = useSelector((state: RootState) => state.messageSlice);
   const { user } = useSelector((state: RootState) => state.auth);
@@ -18,6 +20,7 @@ export const useSendMessage = () => {
   const sendMessage = (userText: string) => {
     const message: MessageType = {
       id: user?._id || "",
+      messageId: crypto.randomUUID(),
       text: userText,
     };
     const messagePayload: messagePayloadType = {
@@ -25,6 +28,7 @@ export const useSendMessage = () => {
       message: message,
     };
     console.log("Отправляю message", messagePayload);
+    markLoading();
     socket?.emit("message", messagePayload);
   };
   return { sendMessage, roomId, userId };

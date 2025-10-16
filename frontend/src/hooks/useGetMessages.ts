@@ -5,17 +5,17 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 
 const useGetMessage = () => {
-  const { getMessages } = useActions();
+  const { getMessages, undoLoading } = useActions();
   const { roomId, messages } = useSelector(
     (state: RootState) => state.messageSlice
   );
   const socket = useSocket();
   useEffect(() => {
     socket?.on("new-message", (chat) => {
-      console.log("Получаю чат", chat);
       const { messages } = chat;
       console.log("messages", messages);
       if (roomId === chat.roomId) {
+        undoLoading();
         getMessages(messages);
       }
     });

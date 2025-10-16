@@ -4,9 +4,14 @@ import type { MessageType } from "../components/Message/Message";
 export type messageSliceType = {
   roomId: string;
   messages: MessageType[];
+  isLoading: boolean;
 };
 
-export const initialState: messageSliceType = { roomId: "", messages: [] };
+export const initialState: messageSliceType = {
+  roomId: "",
+  messages: [],
+  isLoading: false,
+};
 
 export const messageSlice = createSlice({
   name: "messageSlice",
@@ -17,6 +22,12 @@ export const messageSlice = createSlice({
     },
     getMessages: (state, { payload: messages }) => {
       state.messages = messages;
+    },
+    markLoading: (state) => {
+      state.isLoading = true;
+    },
+    undoLoading: (state) => {
+      state.isLoading = false;
     },
   },
 });

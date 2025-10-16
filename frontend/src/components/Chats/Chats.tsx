@@ -5,13 +5,19 @@ import type { userType } from "../../api/users";
 export type ChatsPropsType = {
   chats: userType[];
   variant?: string;
+  handleOnClick?: () => { handleClick: (_id: string) => void };
 };
-function Chats({ chats, variant }: ChatsPropsType) {
+function Chats({ chats, variant, handleOnClick }: ChatsPropsType) {
   return (
     <>
       <Box>
         {chats.map((c) => (
-          <Chat userr={c} variant={variant} key={c._id} />
+          <Chat
+            userr={c}
+            variant={variant}
+            key={c._id}
+            handleOnClick={handleOnClick}
+          />
         ))}
       </Box>
     </>

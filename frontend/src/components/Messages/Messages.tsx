@@ -1,3 +1,4 @@
+import Stack from "@mui/material/Stack";
 import Message, { type MessageType } from "../Message/Message";
 
 export type MessagesType = {
@@ -6,9 +7,11 @@ export type MessagesType = {
 function Messages({ messages }: MessagesType) {
   return (
     <>
-      {messages.map((m) => (
-        <Message {...m} key={m.id} />
-      ))}
+      <Stack>
+        {messages.map((m) => (
+          <Message {...m} key={m?.id} />
+        ))}
+      </Stack>
     </>
   );
 }
