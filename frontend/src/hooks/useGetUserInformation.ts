@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
-import { fetchUser } from "../store/slices/fetchUserSlice";
+import { fetchUser } from "../store/slices/fetchUsersSlice";
 
 const useGetUserInformation = (_id: string) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, isError, user } = useSelector(
-    (state: RootState) => state.user
+  const { isUserLoading, isUserError, user } = useSelector(
+    (state: RootState) => state.users
   );
   useEffect(() => {
     if (_id) {
@@ -15,6 +15,6 @@ const useGetUserInformation = (_id: string) => {
   }, [_id, dispatch]);
   console.log("id", _id);
   console.log("user", user);
-  return { isLoading, isError, user };
+  return { isUserLoading, isUserError, user };
 };
 export default useGetUserInformation;

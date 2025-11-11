@@ -6,8 +6,7 @@ import { useState } from "react";
 import StatusWrapper from "../StatusWrapper/StatusWrapper";
 
 function SearchBar() {
-  const { chats, isLoading, isError, getSearch } = useSearch();
-  const arr = ["India", "Russia", "Denmark"];
+  const { chats, isSearchLoading, isSearchError, getSearch } = useSearch();
   const [value, setValue] = useState<string>("");
   return (
     <>
@@ -19,7 +18,7 @@ function SearchBar() {
           console.log("chats-result", chats);
         }}
       >
-        <StatusWrapper isLoading={isLoading} isError={isError}>
+        <StatusWrapper isLoading={isSearchLoading} isError={isSearchError}>
           <Stack spacing={2} sx={{ width: 350 }}>
             <Autocomplete
               sx={{
@@ -32,9 +31,10 @@ function SearchBar() {
               freeSolo
               id="free-solo-2-demo"
               disableClearable
-              options={arr.map((option) => option)}
+              options={[]}
               renderInput={(params) => (
                 <TextField
+                  onClick={(e) => e.stopPropagation()}
                   onChange={(e) => {
                     setValue(e.target.value);
                   }}

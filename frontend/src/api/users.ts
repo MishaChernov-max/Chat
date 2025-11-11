@@ -1,3 +1,4 @@
+import type { MessageType } from "../components/Message/Message";
 import type { updateUserTypeResponse } from "../store/slices/authSlice";
 import instance from "./instance";
 
@@ -6,7 +7,7 @@ export type userType = {
   email: string;
   photo?: string;
   isOnline?: boolean;
-  name?: string;
+  firstName?: string;
   surName?: string;
 };
 
@@ -21,6 +22,8 @@ export type getUserResponseType = {
 export type registerUserType = {
   email: string;
   password: string;
+  firstName?: string;
+  surName?: string;
 };
 
 export type updateUserType = {
@@ -29,8 +32,12 @@ export type updateUserType = {
   surName: string;
 };
 
-export async function getUsers() {
-  const response = await instance.get<getUsersResponseType>("/users");
+export async function getUsers(q?: string) {
+  const response = await instance.get<getUsersResponseType>("/users", {
+    params: {
+      q: q,
+    },
+  });
   console.log("users", response.data.users);
   return response.data.users;
 }
@@ -42,8 +49,24 @@ export async function getUser(_id: string) {
   return response.data.user;
 }
 
-export async function registerUser({ email, password }: registerUserType) {
+export async function registerUser({
+  email,
+  password,
+  firstName,
+  surName,
+}: registerUserType) {
   const response = await instance.post("/registration", {
+    email: email,
+    password: password,
+    firstName: firstName,
+    surName: surName,
+  });
+  console.log("response", response);
+  return response.data;
+}
+
+export async function loginUser({ email, password }: registerUserType) {
+  const response = await instance.post("/login", {
     email: email,
     password: password,
   });
@@ -72,4 +95,37 @@ export async function updateUserProfile({
     },
   });
   return response.data;
+}
+
+export type UserPair = {
+  Id: string;
+  userId: string;
+};
+
+export type ChatData = {
+  userId: string;
+  chat: {
+    roomId: string;
+    messages?: MessageType[];
+    unreadCount?: number;
+  };
+};
+
+export async function getChat(Id: string, userId: string, type: string) {
+  const response = instance.post("/getHistory", {
+    Id: Id,
+    userId: userId,
+    type: type,
+  });
+  return response;
+}
+
+export async function getChatsInitialData(userId: string) {
+  const response = instance.get("/chats/initialData", {
+    params: {
+      userId: userId,
+    },
+  });
+  console.log("response getChatsInitialData", response);
+  return response;
 }

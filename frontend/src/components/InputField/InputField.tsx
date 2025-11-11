@@ -2,32 +2,79 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { Input } from "@mui/material";
-import { useSendMessage } from "../../hooks/useSendMessage";
-import { useState } from "react";
-import { useSocket } from "../../store/context/SocketContext";
+import { Input, Typography } from "@mui/material";
+import { useSendMessage, type ChatType } from "../../hooks/useSendMessage";
+import { useSocket } from "../../context/SocketContext";
+import { useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useParams } from "react-router-dom";
+import FileAttachment from "../FileAttachment/FileAttachment";
+import CloseIcon from "@mui/icons-material/Close";
 
-function InputField() {
-  const socket = useSocket();
-  let typingTimer: number;
-  let isTyping = false;
-  const handleChange = () => {
-    clearTimeout(typingTimer);
-    if (!isTyping) {
-      socket?.emit("typing-start", { roomId, userId });
-      isTyping = true;
+export type InputFieldType = {
+  showEmoji: boolean;
+  setShowEmoji: Dispatch<SetStateAction<boolean>>;
+  value: string;
+  setValue: Dispatch<SetStateAction<string>>;
+};
+
+function InputField({
+  showEmoji,
+  setShowEmoji,
+  value,
+  setValue,
+}: InputFieldType) {
+  const { type } = useParams();
+  const handleClickEmoji = () => {
+    EmojiClick();
+  };
+  const EmojiClick = () => {
+    if (!showEmoji) {
+      setShowEmoji(true);
+    } else {
+      setShowEmoji(false);
     }
-    typingTimer = setTimeout(() => {
-      socket?.emit("typing-stop", { roomId, userId });
-      isTyping = false;
-    }, 3000);
+  };
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
+
+  const handleFileSelect = (file: File) => {
+    setAttachedFile(file);
   };
 
-  const [value, setValue] = useState<string>("");
-  const { sendMessage, roomId, userId } = useSendMessage();
+  const removeFile = () => {
+    setAttachedFile(null);
+  };
+
+  const socket = useSocket();
+  const typingTimerRef = useRef<number | null>(null);
+  const typingRef = useRef(false);
+  const handleChange = () => {
+    clearTimeout(typingTimerRef.current || 0);
+    if (type === "chat") {
+      if (!typingRef.current) {
+        socket?.emit("typing-start:direct", { roomId, userId });
+        console.log("Отправляю печатает", { roomId, userId });
+        typingRef.current = true;
+      }
+      typingTimerRef.current = setTimeout(() => {
+        socket?.emit("typing-stop:direct", { roomId, userId });
+        typingRef.current = false;
+      }, 3000);
+    }
+    if (type === "group") {
+      if (!typingRef.current) {
+        socket?.emit("typing-start:group", { roomId, userId });
+        console.log("roomId, userId", { roomId, userId });
+        typingRef.current = true;
+      }
+      typingTimerRef.current = setTimeout(() => {
+        socket?.emit("typing-stop:group", { roomId, userId });
+        typingRef.current = false;
+      }, 3000);
+    }
+  };
+  const { sendMessage, roomId, userId, sendFileMessage } = useSendMessage();
   return (
     <>
       <Box
@@ -43,19 +90,62 @@ function InputField() {
         }}
       >
         <Stack direction="row" sx={{ alignItems: "center", flex: 1 }}>
-          <IconButton>
+          <IconButton onClick={handleClickEmoji}>
             <SentimentSatisfiedAltIcon
               sx={{ fill: "white", width: "40px", height: "40px" }}
             />
           </IconButton>
           <form
             style={{ width: "100%" }}
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              sendMessage(value);
+
+              if (attachedFile) {
+                await sendFileMessage(attachedFile, value);
+              } else {
+                console.log("type", type);
+                sendMessage(value, type as ChatType);
+              }
+              setAttachedFile(null);
               setValue("");
             }}
           >
+            {attachedFile && (
+              <Box
+                sx={{
+                  width: "250px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mb: 1,
+                  bgcolor: "grey.800",
+                  borderRadius: 2,
+                  border: "1px solid",
+                  borderColor: "grey.700",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    flex: 1,
+                    color: "white",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {attachedFile.name} ({(attachedFile.size / 1024).toFixed(1)}{" "}
+                  KB)
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={removeFile}
+                  sx={{ color: "white" }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+            )}
             <Input
               value={value}
               sx={{ width: "100%", color: "#FFFFFF" }}
@@ -69,11 +159,7 @@ function InputField() {
           </form>
         </Stack>
         <Stack direction="row">
-          <IconButton>
-            <AttachFileIcon
-              sx={{ fill: "white", width: "40px", height: "40px" }}
-            />
-          </IconButton>
+          <FileAttachment onFileSelect={handleFileSelect} />
           <IconButton>
             <PaymentsIcon
               sx={{ fill: "white", width: "40px", height: "40px" }}

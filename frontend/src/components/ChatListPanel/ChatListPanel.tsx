@@ -8,19 +8,28 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import { enrichUsersWithOnlineStatus } from "./enrichUsersWithOnlineStatus";
 import type { userType } from "../../api/users";
-import type { MessageType } from "../Message/Message";
+import { useState } from "react";
+import GroupList from "../GroupListPanel/GroupListPanel";
 
 type ChatListPanelType = {
   sx?: SxProps;
-  handleOnClick?: () => {
-    handleClick: (_id: string, forwardMessage?: MessageType) => void;
-  };
+  handleOnClick?: (...args: any[]) => any;
+  showFilterTabs: boolean;
+  isLink?: boolean;
 };
 
-function ChatListPanel({ sx, handleOnClick }: ChatListPanelType) {
-  const { chats } = useSelector((state: RootState) => state.searchSlice);
+export type ActiveTab = "chats" | "groups";
+
+function ChatListPanel({
+  sx,
+  handleOnClick,
+  showFilterTabs,
+  isLink,
+}: ChatListPanelType) {
+  const [filterTabs, setFilterTabs] = useState<ActiveTab>("chats");
+  const { chats } = useSelector((state: RootState) => state.users);
   let sortedChats: userType[] = [];
-  const onlineUsers = useSelector((state: RootState) => state.onlineUsers);
+  const { onlineUsers } = useSelector((state: RootState) => state.users);
   const { isLoading, isError, users } = useFetchChats();
   if (chats.length > 0) {
     sortedChats = enrichUsersWithOnlineStatus(chats, onlineUsers);
@@ -51,14 +60,31 @@ function ChatListPanel({ sx, handleOnClick }: ChatListPanelType) {
         }}
       >
         <SearchBar />
-        <ChatFilterTabs />
-        <StatusWrapper isError={isError} isLoading={isLoading}>
-          {chats.length > 0 ? (
-            <Chats chats={sortedChats} handleOnClick={handleOnClick} />
-          ) : (
-            <Chats chats={sortedUsers} handleOnClick={handleOnClick} />
-          )}
-        </StatusWrapper>
+        {showFilterTabs && (
+          <ChatFilterTabs
+            filterTabs={filterTabs}
+            setFilterTabs={setFilterTabs}
+          />
+        )}
+        {filterTabs === "chats" ? (
+          <StatusWrapper isError={isError} isLoading={isLoading}>
+            {chats.length > 0 ? (
+              <Chats
+                chats={sortedChats}
+                handleOnClick={handleOnClick}
+                isLink={isLink}
+              />
+            ) : (
+              <Chats
+                chats={sortedUsers}
+                handleOnClick={handleOnClick}
+                isLink={isLink}
+              />
+            )}
+          </StatusWrapper>
+        ) : (
+          <GroupList />
+        )}
       </Box>
     </>
   );

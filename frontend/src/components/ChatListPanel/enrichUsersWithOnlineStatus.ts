@@ -4,7 +4,6 @@ export const enrichUsersWithOnlineStatus = (
   allUsers: userType[],
   onlineUsers: string[]
 ) => {
-  console.log("users", allUsers, "onlineUsers", onlineUsers);
   return allUsers.map((u) => {
     const user = onlineUsers.includes(u._id);
     if (user) {

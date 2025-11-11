@@ -10,6 +10,7 @@ import share from "../../assets/share.svg";
 import settings from "../../assets/setting.svg";
 import IconButton from "@mui/material/IconButton";
 import type { SxProps } from "@mui/material";
+import { clearLocalStorage } from "../../libs/localStorageApi";
 
 type MenuBarPropsType = {
   sx?: SxProps;
@@ -120,6 +121,10 @@ function MenuBar({ sx }: MenuBarPropsType) {
             Save
           </IconButton>
           <IconButton
+            onClick={() => {
+              clearLocalStorage("accessToken");
+              window.location.href = "/loginPage";
+            }}
             href="/"
             component="a"
             aria-label="Перейти на главную"
@@ -139,7 +144,7 @@ function MenuBar({ sx }: MenuBarPropsType) {
               alt="Логотип"
               sx={{ display: "flex", flexDirection: "column" }}
             />
-            Share
+            Log out
           </IconButton>
           <IconButton
             href="/"

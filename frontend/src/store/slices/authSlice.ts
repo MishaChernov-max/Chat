@@ -1,10 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit/react";
 import {
+  loginUser,
   registerUser,
-  updateUserProfile,
   type registerUserType,
-  type updateUserType,
   type userType,
 } from "../../api/users";
 import { setLocalStorage } from "../../libs/localStorageApi";
@@ -34,19 +33,25 @@ export const registerUserr = createAsyncThunk<
 >("auth/registerUser", async (userdata) => {
   try {
     const response = await registerUser(userdata);
-    setLocalStorage("accesToken", response.accessToken);
+    setLocalStorage("accessToken", response.token);
+    console.log("response", response);
     return response;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    console.log("error", error);
+    throw new Error(
+      error?.response?.data?.error ||
+        "Пользователь с таким email уже существует"
+    );
   }
 });
 
-export const setUserName = createAsyncThunk<
-  updateUserTypeResponse,
-  updateUserType
->("auth/registerUser", async (userdata) => {
+export const loginUserThunk = createAsyncThunk<
+  registerUserResponseType,
+  registerUserType
+>("auth/loginUser", async (userdata) => {
   try {
-    const response = await updateUserProfile(userdata);
+    const response = await loginUser(userdata);
+    setLocalStorage("accessToken", response.token);
     return response;
   } catch (error) {
     throw error;
@@ -71,6 +76,9 @@ const authSlice = createSlice({
         state.isConnected = false;
       }
     },
+    clearError(state) {
+      state.isError = null;
+    },
   },
   extraReducers(builder) {
     builder.addCase(registerUserr.pending, (state) => {
@@ -83,6 +91,19 @@ const authSlice = createSlice({
       state.user = action.payload.user;
     });
     builder.addCase(registerUserr.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = action.error.message ?? null;
+    });
+    builder.addCase(loginUserThunk.pending, (state) => {
+      state.isLoading = true;
+      state.isError = null;
+    });
+    builder.addCase(loginUserThunk.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isError = null;
+      state.user = action.payload.user;
+    });
+    builder.addCase(loginUserThunk.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = action.error.message ?? null;
     });

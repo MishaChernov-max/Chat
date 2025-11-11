@@ -2,11 +2,8 @@ import Box from "@mui/material/Box";
 import Header from "../Header/Header";
 import MessagePanel from "../MeesagePanel/MessagePanel";
 import Footer from "../Footer/Footer";
-import { useParams } from "react-router-dom";
 
 function ChatWindow() {
-  const params = useParams();
-  const id = params.id?.replace(":", "") || "";
   return (
     <>
       <Box
@@ -19,7 +16,7 @@ function ChatWindow() {
           height: "100vh",
         }}
       >
-        <Header id={id} />
+        <Header />
         <MessagePanel />
         <Footer />
       </Box>

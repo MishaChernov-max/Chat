@@ -1,22 +1,19 @@
-import TextField from "@mui/material/TextField";
-import type { Dispatch, SetStateAction } from "react";
+import TextField, { type TextFieldProps } from "@mui/material/TextField";
 
 type CustomInputType = {
-  value: string;
-  setValue: Dispatch<SetStateAction<string>>;
   label: string;
-};
+  password?: boolean;
+  error?: boolean;
+  helperText?: string;
+} & Omit<TextFieldProps, "error" | "helperText">;
 
-function CustomInput({ value, setValue, label }: CustomInputType) {
+function CustomInput({ label, password, ...props }: CustomInputType) {
   return (
     <>
       <TextField
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
+        {...props}
+        type={password ? "password" : "text"}
         sx={{ minWidth: "250px" }}
-        id="outlined-basic"
         label={label}
         variant="outlined"
       />

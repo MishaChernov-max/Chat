@@ -1,8 +1,39 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import type { ActiveTab } from "../ChatListPanel/ChatListPanel";
+import type { Dispatch, SetStateAction } from "react";
 
-function ChatFilterTabs() {
+export type ChatFilterTabsType = {
+  filterTabs: ActiveTab;
+  setFilterTabs: Dispatch<SetStateAction<ActiveTab>>;
+};
+
+function ChatFilterTabs({ filterTabs, setFilterTabs }: ChatFilterTabsType) {
+  const tabToogle = {
+    color: "#FFFFFF",
+    background: "transparent",
+    borderRadius: "100px",
+    "&:hover": {
+      color: "#48736F",
+      background: "#322F2FE0",
+    },
+  };
+  const tabToogleActive = {
+    color: "#48736F",
+    borderRadius: "100px",
+    background: "#322F2FE0",
+    "&:hover": {
+      color: "#48736F",
+      background: "#322F2FE0",
+    },
+  };
+  const handleClickChatsTabs = () => {
+    setFilterTabs("chats");
+  };
+  const handleClickGroupTabs = () => {
+    setFilterTabs("groups");
+  };
   return (
     <>
       <Box
@@ -27,44 +58,22 @@ function ChatFilterTabs() {
           }}
         >
           <Button
-            href="#text-buttons"
-            sx={{
-              color: "#FFFFFF",
-              background: "transparent",
-              borderRadius: "100px",
-              "&:hover": {
-                background: "#322F2FE0",
-              },
+            onClick={() => {
+              handleClickChatsTabs();
             }}
+            sx={filterTabs === "chats" ? tabToogleActive : tabToogle}
           >
             All Chats
           </Button>
           <Button
-            href="#text-buttons"
-            sx={{
-              color: "#FFFFFF",
-              background: "transparent",
-              borderRadius: "100px",
-              "&:hover": {
-                background: "#322F2FE0",
-              },
+            onClick={() => {
+              handleClickGroupTabs();
             }}
+            sx={filterTabs === "groups" ? tabToogleActive : tabToogle}
           >
             Groups
           </Button>
-          <Button
-            href="#text-buttons"
-            sx={{
-              color: "#FFFFFF",
-              background: "transparent",
-              borderRadius: "100px",
-              "&:hover": {
-                background: "#322F2FE0",
-              },
-            }}
-          >
-            Contacts
-          </Button>
+          <Button sx={tabToogle}>Contacts</Button>
         </Box>
       </Box>
     </>

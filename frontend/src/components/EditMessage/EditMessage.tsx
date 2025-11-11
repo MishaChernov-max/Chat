@@ -25,6 +25,7 @@ function EditMessage({ message, isEditing, SetIsEditing }: EditMessageType) {
     wordWrap: "break-word",
     overflowWrap: "break-word",
     maxWidth: "100%",
+    color: "#FFFFFF",
   };
   return (
     <>
@@ -38,13 +39,13 @@ function EditMessage({ message, isEditing, SetIsEditing }: EditMessageType) {
           alignSelf: "flex-end",
           width: "600px",
           borderRadius: "30px",
-          background: "#3964fe",
-          color: "#FFFFFF",
+          background: "#1F1D1D",
         }}
       >
         <Input
           rows={3}
           fullWidth
+          disableUnderline
           type="text"
           value={editText}
           onChange={(e) => {
@@ -57,21 +58,21 @@ function EditMessage({ message, isEditing, SetIsEditing }: EditMessageType) {
         <Stack
           direction="row"
           gap={1}
-          sx={{ justifyContent: "flex-end", alignItems: "center" }}
+          sx={{ justifyContent: "flex-end", alignItems: "center", mr: 2 }}
         >
           <Button
             onClick={() => {
               handleClickClose();
             }}
-            sx={{ background: "black", borderRadius: "30px", width: "20px" }}
+            sx={{ borderRadius: "30px", width: "20px", color: "#ffffffc5" }}
           >
             Close
           </Button>
           <Button
             type="submit"
-            sx={{ background: "white", borderRadius: "30px", width: "20px" }}
+            sx={{ borderRadius: "30px", width: "20px", color: "#ffffffc5" }}
           >
-            Submit
+            Ok
           </Button>
         </Stack>
       </form>

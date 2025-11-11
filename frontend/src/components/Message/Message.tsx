@@ -1,4 +1,3 @@
-import { Avatar, Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
@@ -8,15 +7,20 @@ import { useEffect, useState } from "react";
 import ModalUsers from "../ModalUsers/ModalUsers";
 import ForwardMessage from "../forwardMessage/forwardMessage";
 import EditMessage from "../EditMessage/EditMessage";
+import handleClickChatModal from "../../utils/handleClckChatModal";
+import formatTime from "../../utils/formatTime";
+import type { ChatType } from "../../hooks/useSendMessage";
+import FriendMessage from "../FriendMessage/FriendMessage";
 
 export type MessageType = {
   id: string;
   text: string;
   messageId: string;
   photo?: string;
-  timeStamp?: string;
+  createdAt?: Date;
   forwardedFrom?: string;
   isEdited?: boolean;
+  type?: ChatType;
 };
 
 export type ContextMenuType = {
@@ -24,8 +28,9 @@ export type ContextMenuType = {
   mouseY: number;
 };
 function Message(message: MessageType) {
-  const { id, text, photo, messageId, timeStamp, forwardedFrom, isEdited } =
-    message;
+  const { id, text, messageId, createdAt, forwardedFrom, isEdited } = message;
+  const dateTime = formatTime(createdAt || "");
+
   const { isLoading } = useSelector((state: RootState) => state.messageSlice);
   const { user } = useSelector((state: RootState) => state.auth);
   const [contextMenu, setContextMenu] = useState<ContextMenuType | null>(null);
@@ -47,9 +52,11 @@ function Message(message: MessageType) {
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, []);
+  }, [id]);
   const isMyMessage = id === user?._id;
-
+  if (!isMyMessage) {
+    return <FriendMessage message={message} />;
+  }
   return (
     <>
       {isEditing ? (
@@ -63,21 +70,26 @@ function Message(message: MessageType) {
           onContextMenu={handleContextMenu}
           sx={{
             display: "flex",
-            flexDirection: forwardedFrom ? "column" : "row",
-            alignItems: "center",
-            justifyContent: "center",
-            whiteSpace: "no-wrap",
+            flexDirection: "row",
+            alignItems: "flex-end",
+            justifyContent: "flex-end",
             borderRadius: "30px",
-            padding: "8px 30px",
+            padding: "8px 16px 8px 20px",
             bgcolor: "#312F2F",
-            alignSelf: !isMyMessage ? "flex-start" : "flex-end",
+            alignSelf: "flex-end",
             marginTop: "15px",
             position: "relative",
             opacity: isLoading ? "0.7" : "1",
+            maxWidth: "70%",
+            gap: 1,
           }}
         >
           {forwardedFrom && <ForwardMessage forwardedFrom={forwardedFrom} />}
-          <ModalUsers showModal={showModal} />
+          <ModalUsers
+            handleOnClick={handleClickChatModal}
+            showFilterTabs={false}
+            showModal={showModal}
+          />
           {contextMenu && (
             <IconMenu
               text={text}
@@ -88,29 +100,47 @@ function Message(message: MessageType) {
               SetIsEditing={SetIsEditing}
               message={message}
               forwardedFrom={forwardedFrom}
+              contextMenu={contextMenu}
             />
           )}
-          {!isMyMessage && (
-            <Button href="qa123131">
-              <Avatar src={photo} />
-            </Button>
-          )}
-          {timeStamp}
+
           <Typography
             sx={{
               fontSize: "20px",
-              maxWidth: "1600px",
+              wordBreak: "break-word",
+              lineHeight: 1.3,
             }}
           >
             {text}
           </Typography>
-          {isEdited && (
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+              minWidth: "fit-content",
+              marginBottom: "1px",
+            }}
+          >
+            {isEdited && (
+              <span
+                style={{ color: "green", fontSize: "10px", lineHeight: 1.4 }}
+              >
+                Изменено
+              </span>
+            )}
             <span
-              style={{ marginLeft: "10px", color: "green", fontSize: "12px" }}
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: "12px",
+                lineHeight: 1,
+              }}
             >
-              Изменено
+              {dateTime}
             </span>
-          )}
+          </Box>
         </Box>
       )}
     </>

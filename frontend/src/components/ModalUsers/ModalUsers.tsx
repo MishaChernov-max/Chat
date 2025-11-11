@@ -1,12 +1,19 @@
 import Modal from "@mui/material/Modal";
 import ChatListPanel from "../ChatListPanel/ChatListPanel";
 import { Box } from "@mui/material";
-import handleClickChatModal from "../../utils/handleClckChatModal";
 
 export type ModalUsersType = {
   showModal: boolean;
+  showFilterTabs: boolean;
+  handleOnClick?: (...args: any[]) => any;
+  isLink?: boolean;
 };
-function ModalUsers({ showModal }: ModalUsersType) {
+function ModalUsers({
+  showModal,
+  showFilterTabs,
+  handleOnClick,
+  isLink,
+}: ModalUsersType) {
   const centeredModalStyle = {
     position: "absolute",
     top: "50%",
@@ -22,7 +29,11 @@ function ModalUsers({ showModal }: ModalUsersType) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={centeredModalStyle}>
-          <ChatListPanel handleOnClick={handleClickChatModal} />
+          <ChatListPanel
+            showFilterTabs={showFilterTabs}
+            handleOnClick={handleOnClick}
+            isLink={isLink}
+          />
         </Box>
       </Modal>
     </>

@@ -6,7 +6,9 @@ export type forwardMessageType = {
 function ForwardMessage({ forwardedFrom }: forwardMessageType) {
   return (
     <>
-      <Typography>Переслано от {forwardedFrom}</Typography>
+      <Typography sx={{ color: "#e0d4f5ef" }}>
+        Переслано от {forwardedFrom}
+      </Typography>
     </>
   );
 }

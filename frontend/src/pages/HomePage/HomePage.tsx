@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import MenuBar from "../../components/MenuBar/MenuBar";
 import CommunicationPanel from "../../components/CommuniactionPanel/CommunicationPanel";
 import b from "../../assets/background.svg";
-import ChatWindow from "../../components/ChatWindow/ChatWindow";
+import { Outlet } from "react-router-dom";
 
 function HomePage() {
   return (
@@ -20,7 +20,7 @@ function HomePage() {
 
         <CommunicationPanel sx={{ flex: 1 }} />
 
-        <ChatWindow />
+        <Outlet />
       </Box>
     </>
   );

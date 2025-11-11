@@ -1,9 +1,10 @@
 import Box from "@mui/material/Box";
 import Messages from "../Messages/Messages";
-import useGetMessage from "../../hooks/useGetMessages";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store";
 
 function MessagePanel() {
-  const messages = useGetMessage();
+  const { messages } = useSelector((state: RootState) => state.messageSlice);
   return (
     <>
       <Box
