@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
-import { fetchSearchResults } from "../store/slices/fetchUsersSlice";
+import { fetchSearchResults } from "../store/slices/usersSlice";
 
 export const useSearch = () => {
   const dispatch = useDispatch<AppDispatch>();

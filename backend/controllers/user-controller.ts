@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
 import userService from "../service/user-service";
+import tokenService from "../service/token-service";
 
 export type userType = {
   _id: Types.ObjectId;
@@ -13,15 +15,55 @@ export type searchResponseType = {
 };
 
 class UserController {
-  async registration(req: any, res: any, next: any) {
+  async refresh(req: Request, res: Response) {
     try {
-      const { email, password } = req.body;
-      const userData = await userService.registration(email, password);
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        return res.status(401).json("Ошибка авторизации");
+      }
+      const decodedData = await tokenService.verifyRefreshToken(refreshToken);
+      const payload = {
+        email: decodedData.email,
+        _id: decodedData._id,
+        isActivated: decodedData.isActivated,
+        firstName: decodedData.firstName,
+        surName: decodedData.surName,
+      };
+      const newAccessToken = jwt.sign(
+        payload,
+        process.env.JWT_ACCESS_SECRET || "jwt-secret-key",
+        {
+          expiresIn: "15m",
+        }
+      );
+      res.json({ token: newAccessToken });
+    } catch (error) {
+      res.clearCookie("refreshToken");
+      res.status(403).json("Доступ запрещен");
+    }
+  }
+
+  async registration(req: Request, res: Response) {
+    try {
+      const { email, password, firstName, surName } = req.body;
+      const userData = await userService.registration(
+        email,
+        password,
+        firstName,
+        surName
+      );
       res.cookie("refreshToken", userData?.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
-      res.json(userData);
+      console.log("Отправляю", {
+        ...userData?.user,
+        token: userData?.accessToken,
+      });
+      return res.json({
+        user: userData?.user,
+        token: userData?.accessToken,
+      });
     } catch (e: any) {
       return res.status(400).json({ error: e.message });
     }
@@ -31,7 +73,14 @@ class UserController {
     try {
       const { email, password } = req.body;
       const user = await userService.login(email, password);
-      return res.json({ user: user });
+      res.cookie("refreshToken", user?.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+      return res.json({
+        user: user.userDto,
+        token: user.accessToken,
+      });
     } catch (e) {
       throw e;
     }

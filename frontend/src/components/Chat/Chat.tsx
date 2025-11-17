@@ -1,41 +1,27 @@
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import CallActions from "../CallActions/CallActions";
-import type { userType } from "../../api/users";
 import { Link } from "react-router-dom";
 import type { RootState } from "../../store";
 import { useSelector } from "react-redux";
-import { Badge } from "@mui/material";
 import { useTypingForRoom } from "../../hooks/useTypingForRoom";
+import type { ChatType } from "../../store/slices/chatsSlice";
+import { Avatar, Badge } from "@mui/material";
 
 export type ChatTPropsType = {
-  userr: userType;
-  variant?: string;
+  chat: ChatType;
   handleOnClick?: Function;
   isLink?: boolean;
 };
-function Chat({
-  userr,
-  variant,
-  handleOnClick,
-  isLink = true,
-}: ChatTPropsType) {
-  const type = "chat";
+function Chat({ chat, handleOnClick, isLink = true }: ChatTPropsType) {
   const { handleClick } = handleOnClick
     ? handleOnClick()
     : { handleClick: () => {} };
-  const { _id, photo, isOnline, firstName, surName } = userr;
-  const { chatCache, chatsOverview, typingUsers } = useSelector(
-    (state: RootState) => state.users
-  );
-  const unreadInfo = chatsOverview.find((counter) => counter.senderId === _id);
-  console.log("unreadInfo", unreadInfo);
-  const unreadCount = chatCache.byUserId[_id]?.chat?.unreadCount || 0;
-  // const isTyping = useUserTyping(_id);
+  const { typingUsers } = useSelector((state: RootState) => state.users);
+
+  const { _id, name, avatar } = chat;
   useTypingForRoom(_id);
   const isTyping = typingUsers.includes(_id);
-  const space = variant === "call" ? "space-between" : "flex-start";
+
   const content = (
     <Box
       onClick={() => {
@@ -45,7 +31,7 @@ function Chat({
       <Box
         sx={{
           display: "flex",
-          justifyContent: space,
+          justifyContent: "flex-start",
           alignItems: "center",
           gap: "20px",
           width: "400px",
@@ -59,8 +45,8 @@ function Chat({
           cursor: "pointer",
         }}
       >
-        <Badge
-          badgeContent={unreadInfo?.unreadCount || unreadCount}
+        {/* <Badge
+          badgeContent={}
           color="info"
           overlap="circular"
           sx={{
@@ -73,26 +59,18 @@ function Chat({
           }}
         >
           <Avatar
-            src={photo}
+            src={avatar}
             alt="Фото Профиля"
             sx={{ width: "80px", height: "80px" }}
           />
-        </Badge>
-        {isOnline && (
-          <Box
-            sx={{
-              position: "relative",
-              right: "35px",
-              bottom: "20px",
-              background: "green",
-              width: "15px",
-              height: "15px",
-              backgroundColor: "#00FF38",
-              borderRadius: "8px",
-            }}
-          ></Box>
-        )}
+          2131
+        </Badge> */}
 
+        <Avatar
+          src={avatar}
+          alt="Фото Профиля"
+          sx={{ width: "80px", height: "80px" }}
+        />
         <Box
           sx={{
             display: "flex",
@@ -100,17 +78,19 @@ function Chat({
             alignItems: "flex-start",
           }}
         >
-          <Typography variant="h6" component="h6">
+          {/* <Typography variant="h6" component="h6">
             {isTyping ? <span>Печатает....</span> : firstName}
-          </Typography>
+          </Typography> */}
           <Typography variant="h6" component="h6" sx={{ color: "#767876" }}>
-            {surName}
+            {name}
           </Typography>
+          {/* <Typography variant="h6" component="h6" sx={{ color: "#767876" }}>
+            w1q
+          </Typography> */}
         </Box>
-        {variant === "call" && <CallActions />}
       </Box>
     </Box>
   );
-  return isLink ? <Link to={`/user/${_id}/${type}`}>{content}</Link> : content;
+  return isLink ? <Link to={`/chat/${_id}`}>{content}</Link> : content;
 }
 export default Chat;

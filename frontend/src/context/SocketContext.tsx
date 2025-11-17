@@ -30,17 +30,10 @@ export const SocketProvider = ({ children }: SocketContextProviderType) => {
   const [open, setOpen] = useState<boolean>(false);
   const [currentNotification, setCurrentNotification] =
     useState<NotificationData | null>();
-  const {
-    getOnlineUsers,
-    getDisconnectUser,
-    getOnlineUser,
-    updateChatCache,
-    updateChatCacheByGroupId,
-    undoLoading,
-    getMessages,
-  } = useActions();
+  const { getOnlineUsers, getDisconnectUser, getOnlineUser, updateChatCache } =
+    useActions();
 
-  const { roomId } = useSelector((state: RootState) => state.messageSlice);
+  const { chat } = useSelector((state: RootState) => state.chats);
 
   useEffect(() => {
     const token = getLocalStorage("accessToken");
@@ -76,71 +69,17 @@ export const SocketProvider = ({ children }: SocketContextProviderType) => {
     };
   }, [user?._id]);
   useEffect(() => {
-    const handleNotification = (data: NotificationData) => {
-      if (data.roomId !== roomId) {
-        setCurrentNotification(data);
-        setOpen(true);
-      }
+    const handleNewMessage = (message: any) => {
+      console.log("Получил новое сообщение", message);
+      updateChatCache(message);
     };
-    const handleUnreadUpdate = (data: {
-      roomId: string;
-      unread_count: number;
-    }) => {
-      if (roomId !== data.roomId) {
-        updateChatCache({
-          index: data.roomId,
-          unreadCount: data.unread_count,
-          action: "UPDATE_UNREAD_COUNT",
-        });
-      } else {
-        fetch("http://localhost:5000/api/mark-as-read", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            roomId: roomId,
-            userId: user?._id,
-          }),
-        }).then((res) => {
-          if (!res.ok) {
-            throw new Error(`Error status: ${res.status}`);
-          }
-        });
-      }
-    };
-    const handleNewMessage = (chat: any) => {
-      updateChatCache({
-        index: chat.roomId,
-        messages: chat.messages,
-        action: "ADD_MESSAGE",
-      });
-      if (roomId === chat.roomId) {
-        undoLoading();
-        getMessages(chat.messages);
-      }
-    };
-    const handleNewGroupMessage = (chat: any) => {
-      updateChatCacheByGroupId({
-        index: chat.roomId,
-        messages: chat.messages,
-      });
-      if (roomId === chat.roomId) {
-        undoLoading();
-        getMessages(chat.messages);
-      }
-    };
-    socket?.on("new-message-group", handleNewGroupMessage);
-    socket?.on("notification", handleNotification);
-    socket?.on("unread_update", handleUnreadUpdate);
     socket?.on("new-message", handleNewMessage);
     return () => {
-      socket?.off("notification", handleNotification);
-      socket?.off("unread_update", handleUnreadUpdate);
+      // socket?.off("notification", handleNotification);
+      // socket?.off("unread_update", handleUnreadUpdate);
       socket?.off("new-message", handleNewMessage);
-      socket?.off("new-message-group", handleNewGroupMessage);
     };
-  }, [socket, roomId]);
+  }, [socket, chat?._id]);
   return (
     <SocketContext.Provider value={socket}>
       {children}

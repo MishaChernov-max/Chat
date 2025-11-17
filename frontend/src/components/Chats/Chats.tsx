@@ -1,43 +1,29 @@
 import Box from "@mui/material/Box";
 import Chat from "../Chat/Chat";
-import type { userType } from "../../api/users";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store";
-import Favorite from "../Favorite/Favorite";
+import type { ChatType } from "../../store/slices/chatsSlice";
 
 export type ChatsPropsType = {
-  chats: userType[];
+  chats: ChatType[];
   variant?: string;
   handleOnClick?: (...args: any[]) => any;
   isLink?: boolean;
 };
-function Chats({ chats, variant, handleOnClick, isLink }: ChatsPropsType) {
-  const { user } = useSelector((state: RootState) => state.auth);
+function Chats({ chats, handleOnClick, isLink }: ChatsPropsType) {
+  console.log("chats", chats);
+  if (!chats) {
+    return;
+  }
   return (
     <>
       <Box>
-        {chats.map((c) => {
-          if (c._id === user?._id) {
-            return (
-              <Favorite
-                userr={c}
-                variant={variant}
-                key={c._id}
-                handleOnClick={handleOnClick}
-                isLink={isLink}
-              />
-            );
-          }
-          return (
-            <Chat
-              userr={c}
-              variant={variant}
-              key={c._id}
-              handleOnClick={handleOnClick}
-              isLink={isLink}
-            />
-          );
-        })}
+        {chats.map((c) => (
+          <Chat
+            chat={c}
+            key={c._id}
+            handleOnClick={handleOnClick}
+            isLink={isLink}
+          />
+        ))}
       </Box>
     </>
   );

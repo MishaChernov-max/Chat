@@ -30,7 +30,7 @@ function App() {
             }
           >
             <Route index element={<EmptyChat />} />
-            <Route path={"/user/:id/:type"} element={<ChatWindow />} />
+            <Route path={"/chat/:id"} element={<ChatWindow />} />
           </Route>
           <Route path={"/loginPage"} element={<LoginPage />}>
             <Route index element={<AuthForm />} />

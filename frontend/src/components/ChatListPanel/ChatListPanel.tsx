@@ -4,12 +4,10 @@ import ChatFilterTabs from "../ChatFilterTabs/ChatFilterTabs";
 import Chats from "../Chats/Chats";
 import useFetchChats from "../../hooks/useFetchChats";
 import StatusWrapper from "../StatusWrapper/StatusWrapper";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store";
-import { enrichUsersWithOnlineStatus } from "./enrichUsersWithOnlineStatus";
-import type { userType } from "../../api/users";
 import { useState } from "react";
 import GroupList from "../GroupListPanel/GroupListPanel";
+import UserList from "../UserListPanel/UserList";
+import { useUserClick } from "../User/useUserClick";
 
 type ChatListPanelType = {
   sx?: SxProps;
@@ -18,23 +16,13 @@ type ChatListPanelType = {
   isLink?: boolean;
 };
 
-export type ActiveTab = "chats" | "groups";
+export type ActiveTab = "chats" | "groups" | "users";
 
-function ChatListPanel({
-  sx,
-  handleOnClick,
-  showFilterTabs,
-  isLink,
-}: ChatListPanelType) {
+function ChatListPanel({ sx, showFilterTabs, isLink }: ChatListPanelType) {
   const [filterTabs, setFilterTabs] = useState<ActiveTab>("chats");
-  const { chats } = useSelector((state: RootState) => state.users);
-  let sortedChats: userType[] = [];
-  const { onlineUsers } = useSelector((state: RootState) => state.users);
-  const { isLoading, isError, users } = useFetchChats();
-  if (chats.length > 0) {
-    sortedChats = enrichUsersWithOnlineStatus(chats, onlineUsers);
-  }
-  const sortedUsers = enrichUsersWithOnlineStatus(users, onlineUsers);
+
+  const { chatsLoading, chatsError, chats } = useFetchChats();
+
   return (
     <>
       <Box
@@ -66,20 +54,16 @@ function ChatListPanel({
             setFilterTabs={setFilterTabs}
           />
         )}
-        {filterTabs === "chats" ? (
-          <StatusWrapper isError={isError} isLoading={isLoading}>
+
+        {/* Отдельный компонент для условного рендеринга */}
+        {filterTabs === "users" ? (
+          <UserList handleOnClick={useUserClick} />
+        ) : filterTabs === "chats" ? (
+          <StatusWrapper isError={chatsError} isLoading={chatsLoading}>
             {chats.length > 0 ? (
-              <Chats
-                chats={sortedChats}
-                handleOnClick={handleOnClick}
-                isLink={isLink}
-              />
+              <Chats chats={chats} isLink={isLink} />
             ) : (
-              <Chats
-                chats={sortedUsers}
-                handleOnClick={handleOnClick}
-                isLink={isLink}
-              />
+              <h2>Чатов нету</h2>
             )}
           </StatusWrapper>
         ) : (

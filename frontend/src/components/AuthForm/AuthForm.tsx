@@ -1,14 +1,14 @@
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import CustomInput from "../CustomInput/CustomInput";
 import ModalWrap from "../ModalWrap/ModalWrap";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import useLoginPage from "../../hooks/useLoginPage";
 import useActions from "../../hooks/useActions";
-import { CircularProgress } from "@mui/material";
+import { Alert, CircularProgress } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 
 export type AuthFormData = {
@@ -87,11 +87,7 @@ function AuthForm() {
             </Button>
           </Box>
         </Typography>
-        {errors.root && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {errors.root.message}
-          </Typography>
-        )}
+        {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
         <Stack sx={{ alignItems: "flex-start" }}>
           <Typography variant="h4" component="h4" sx={{ marginBottom: "24px" }}>
             Sign Up

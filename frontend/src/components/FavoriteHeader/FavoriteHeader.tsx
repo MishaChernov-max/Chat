@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import ProfilePhoto from "../../assets/ProfilePhoto.svg";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";

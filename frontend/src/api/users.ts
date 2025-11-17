@@ -5,10 +5,10 @@ import instance from "./instance";
 export type userType = {
   _id: string;
   email: string;
-  photo?: string;
-  isOnline?: boolean;
-  firstName?: string;
-  surName?: string;
+  isActivated?: boolean;
+  avatar?: string;
+  firstName: string;
+  surName: string;
 };
 
 export type getUsersResponseType = {
@@ -32,12 +32,8 @@ export type updateUserType = {
   surName: string;
 };
 
-export async function getUsers(q?: string) {
-  const response = await instance.get<getUsersResponseType>("/users", {
-    params: {
-      q: q,
-    },
-  });
+export async function getUsers() {
+  const response = await instance.get<getUsersResponseType>("/users");
   console.log("users", response.data.users);
   return response.data.users;
 }
@@ -111,11 +107,13 @@ export type ChatData = {
   };
 };
 
-export async function getChat(Id: string, userId: string, type: string) {
+export async function getOrCreateDirectChat(
+  currentUserId: string,
+  friendUserId: string
+) {
   const response = instance.post("/getHistory", {
-    Id: Id,
-    userId: userId,
-    type: type,
+    currentUserId: currentUserId,
+    friendUserId: friendUserId,
   });
   return response;
 }

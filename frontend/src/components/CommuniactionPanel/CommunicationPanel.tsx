@@ -1,7 +1,6 @@
 import { Stack, type SxProps } from "@mui/material";
 import CallListPanel from "../CallListPanel/CallListPanel";
 import ChatListPanel from "../ChatListPanel/ChatListPanel";
-import handleClickChat from "../../utils/handleClickChat";
 
 type ChatListPanelType = {
   sx: SxProps;
@@ -18,7 +17,7 @@ function CommunicationPanel({ sx }: ChatListPanelType) {
           ...{ sx },
         }}
       >
-        <ChatListPanel showFilterTabs={true} handleOnClick={handleClickChat} />
+        <ChatListPanel showFilterTabs={true} isLink={true} />
         <CallListPanel />
       </Stack>
     </>

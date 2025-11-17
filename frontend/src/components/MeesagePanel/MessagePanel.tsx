@@ -2,9 +2,12 @@ import Box from "@mui/material/Box";
 import Messages from "../Messages/Messages";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
+import { Alert, Badge, CircularProgress, Snackbar } from "@mui/material";
 
 function MessagePanel() {
-  const { messages } = useSelector((state: RootState) => state.messageSlice);
+  const { chatLoading, chatError, chat } = useSelector(
+    (state: RootState) => state.chats
+  );
   return (
     <>
       <Box
@@ -22,7 +25,18 @@ function MessagePanel() {
           },
         }}
       >
-        <Messages messages={messages} />
+        {chatError && (
+          <Snackbar
+            content="Возникла ошибка при загрузке чата"
+            color="error"
+            autoHideDuration={2000}
+          />
+        )}
+        {chatLoading ? (
+          <CircularProgress />
+        ) : (
+          <Messages messages={chat?.messages || []} />
+        )}
       </Box>
     </>
   );

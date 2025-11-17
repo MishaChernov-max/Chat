@@ -4,7 +4,8 @@ import { bindActionCreators } from "@reduxjs/toolkit";
 import { useMemo } from "react";
 import { actions as authSliceCreators } from "../store/slices/authSlice";
 import { actions as groupSliceCreators } from "../store/slices/groupSlice";
-import { actions as usersSliceCreators } from "../store/slices/fetchUsersSlice";
+import { actions as usersSliceCreators } from "../store/slices/usersSlice";
+import { actions as chatsSliceCreators } from "../store/slices/chatsSlice";
 
 const useActions = () => {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ const useActions = () => {
     ...messagesSliceCreators,
     ...groupSliceCreators,
     ...usersSliceCreators,
+    ...chatsSliceCreators,
   };
   return useMemo(
     () => bindActionCreators(rootactionCreators, dispatch),

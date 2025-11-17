@@ -49,31 +49,31 @@ function InputField({
   const socket = useSocket();
   const typingTimerRef = useRef<number | null>(null);
   const typingRef = useRef(false);
-  const handleChange = () => {
-    clearTimeout(typingTimerRef.current || 0);
-    if (type === "chat") {
-      if (!typingRef.current) {
-        socket?.emit("typing-start:direct", { roomId, userId });
-        console.log("Отправляю печатает", { roomId, userId });
-        typingRef.current = true;
-      }
-      typingTimerRef.current = setTimeout(() => {
-        socket?.emit("typing-stop:direct", { roomId, userId });
-        typingRef.current = false;
-      }, 3000);
-    }
-    if (type === "group") {
-      if (!typingRef.current) {
-        socket?.emit("typing-start:group", { roomId, userId });
-        console.log("roomId, userId", { roomId, userId });
-        typingRef.current = true;
-      }
-      typingTimerRef.current = setTimeout(() => {
-        socket?.emit("typing-stop:group", { roomId, userId });
-        typingRef.current = false;
-      }, 3000);
-    }
-  };
+  // const handleChange = () => {
+  //   clearTimeout(typingTimerRef.current || 0);
+  //   if (type === "chat") {
+  //     if (!typingRef.current) {
+  //       socket?.emit("typing-start:direct", { roomId, userId });
+  //       console.log("Отправляю печатает", { roomId, userId });
+  //       typingRef.current = true;
+  //     }
+  //     typingTimerRef.current = setTimeout(() => {
+  //       socket?.emit("typing-stop:direct", { roomId, userId });
+  //       typingRef.current = false;
+  //     }, 3000);
+  //   }
+  // if (type === "group") {
+  //   if (!typingRef.current) {
+  //     socket?.emit("typing-start:group", { roomId, userId });
+  //     console.log("roomId, userId", { roomId, userId });
+  //     typingRef.current = true;
+  //   }
+  //   typingTimerRef.current = setTimeout(() => {
+  //     socket?.emit("typing-stop:group", { roomId, userId });
+  //     typingRef.current = false;
+  //   }, 3000);
+  // }
+  // };
   const { sendMessage, roomId, userId, sendFileMessage } = useSendMessage();
   return (
     <>
@@ -104,7 +104,7 @@ function InputField({
                 await sendFileMessage(attachedFile, value);
               } else {
                 console.log("type", type);
-                sendMessage(value, type as ChatType);
+                sendMessage(value);
               }
               setAttachedFile(null);
               setValue("");
@@ -153,7 +153,7 @@ function InputField({
               placeholder="Message..."
               onChange={(e) => {
                 setValue(e.target.value);
-                handleChange();
+                // handleChange();
               }}
             />
           </form>

@@ -1,23 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
 import { useEffect } from "react";
-import {
-  fetchChatsOverview,
-  fetchUsers,
-} from "../store/slices/fetchUsersSlice";
+import { loadUserChats } from "../store/slices/chatsSlice";
 const useFetchChats = () => {
-  const { user } = useSelector((state: RootState) => state.users);
-  const { isLoading, isError, users } = useSelector(
-    (state: RootState) => state.users
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { chatsLoading, chatsError, chats } = useSelector(
+    (state: RootState) => state.chats
   );
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
-  useEffect(() => {
-    console.log("user?._id fetchUsers ", user?._id);
-    dispatch(fetchChatsOverview(user?._id || ""));
+    dispatch(loadUserChats(user?._id!));
   }, [dispatch, user?._id]);
-  return { isLoading, isError, users };
+  return { chatsLoading, chatsError, chats };
 };
 export default useFetchChats;

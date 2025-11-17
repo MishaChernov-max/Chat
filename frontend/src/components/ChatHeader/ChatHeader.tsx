@@ -5,25 +5,20 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import CallActions from "../CallActions/CallActions";
-import useGetUserInformation from "../../hooks/useGetUserInformation";
-import ConnectionStatusWrapper from "../ConnectionStatusWrapper/ConnectionStatusWrapper";
-import StatusWrapper from "../StatusWrapper/StatusWrapper";
+import { useTypingForRoom } from "../../hooks/useTypingForRoom";
+import { useParams } from "react-router-dom";
+import { useChat } from "./useChat";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import { useTypingForRoom } from "../../hooks/useTypingForRoom";
 
-export type ChatHeaderType = {
-  id: string;
-};
-function ChatHeader({ id }: ChatHeaderType) {
-  const { onlineUsers, typingUsers } = useSelector(
-    (state: RootState) => state.users
-  );
-  const st = onlineUsers.find((u) => u === id);
-  const status = Boolean(st);
-  const { isUserLoading, isUserError, user } = useGetUserInformation(id);
-  useTypingForRoom(id);
-  const isTyping = typingUsers.includes(id);
+function ChatHeader() {
+  const params = useParams();
+  const id = params.id!;
+  const { chat } = useSelector((state: RootState) => state.chats);
+  //Использовать индакаторы загрузки/ошибки в Messages
+  // useTypingForRoom(id);
+  // const isTyping = typingUsers.includes(id);
+  useChat(id);
   return (
     <>
       <Box
@@ -38,26 +33,27 @@ function ChatHeader({ id }: ChatHeaderType) {
           marginBottom: "40px",
         }}
       >
-        <StatusWrapper isError={isUserError} isLoading={isUserLoading}>
-          <Stack direction="row" sx={{ alignItems: "center" }}>
-            <Button href="#text-buttons">
-              <Avatar
-                src={ProfilePhoto}
-                alt="ProfilePhoto"
-                sx={{ width: "80px", height: "80px" }}
-              />
-            </Button>
-            <Stack direction="column" sx={{ alignItems: "flex-start" }}>
-              <Typography variant="h5" component="h5">
-                {isTyping ? <span>Печатает...</span> : user?.firstName}
-              </Typography>
-              <ConnectionStatusWrapper isConnected={status} />
-            </Stack>
+        <Stack direction="row" sx={{ alignItems: "center" }}>
+          <Button href="#text-buttons">
+            <Avatar
+              src={ProfilePhoto}
+              alt="ProfilePhoto"
+              sx={{ width: "80px", height: "80px" }}
+            />
+          </Button>
+          <Stack direction="column" sx={{ alignItems: "flex-start" }}>
+            {/* <Typography variant="h5" component="h5">
+              {isTyping ? <span>Печатает...</span> : user?.firstName}
+            </Typography> */}
+            <Typography variant="h5" component="h5">
+              {chat?.name!}
+            </Typography>
+            {/* <ConnectionStatusWrapper isConnected={status} /> */}
           </Stack>
-          <Stack>
-            <CallActions />
-          </Stack>
-        </StatusWrapper>
+        </Stack>
+        <Stack>
+          <CallActions />
+        </Stack>
       </Box>
     </>
   );

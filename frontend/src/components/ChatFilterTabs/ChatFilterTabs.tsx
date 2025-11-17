@@ -34,6 +34,9 @@ function ChatFilterTabs({ filterTabs, setFilterTabs }: ChatFilterTabsType) {
   const handleClickGroupTabs = () => {
     setFilterTabs("groups");
   };
+  const handleClickUsersTabs = () => {
+    setFilterTabs("users");
+  };
   return (
     <>
       <Box
@@ -58,22 +61,23 @@ function ChatFilterTabs({ filterTabs, setFilterTabs }: ChatFilterTabsType) {
           }}
         >
           <Button
-            onClick={() => {
-              handleClickChatsTabs();
-            }}
+            onClick={handleClickChatsTabs}
             sx={filterTabs === "chats" ? tabToogleActive : tabToogle}
           >
             All Chats
           </Button>
           <Button
-            onClick={() => {
-              handleClickGroupTabs();
-            }}
+            onClick={handleClickGroupTabs}
             sx={filterTabs === "groups" ? tabToogleActive : tabToogle}
           >
             Groups
           </Button>
-          <Button sx={tabToogle}>Contacts</Button>
+          <Button
+            sx={filterTabs === "users" ? tabToogleActive : tabToogle}
+            onClick={handleClickUsersTabs}
+          >
+            Users
+          </Button>
         </Box>
       </Box>
     </>

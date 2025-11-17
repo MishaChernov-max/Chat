@@ -3,39 +3,45 @@ import { UserDto } from "../dtos/user-dto";
 import userModels from "../models/user-models";
 import bcrypt from "bcryptjs";
 import tokenService from "./token-service";
-import mongoose from "mongoose";
+import mailService, { sendWithEthereal } from "./mail-service";
 
 class UserService {
-  async registration(email: string, password: string) {
-    try {
-      console.log("Mongoose readyState:", mongoose.connection.readyState);
-      const candidate = await userModels.findOne({ email });
-      if (candidate) {
-        throw new Error(`Пользователь с таким ${email} уже существует`);
-      }
-      const hashPassword = await bcrypt.hash(password, 3);
-      const activationLink = uuidv4();
-      const user = await userModels.create({
-        email,
-        password: hashPassword,
-        activationLink,
-      });
-      // await mailService.sendActivationMail(
-      //   email,
-      //   `${process.env.API_URL}/api/activate/${activationLink}`
-      // );
-      const userDto = new UserDto(user);
-      const tokens = tokenService.generateTokens({ ...userDto });
-      await tokenService.saveToken(userDto._id, tokens.refreshToken);
-      console.log("tokens", tokens);
-      return {
-        ...tokens,
-        user: userDto,
-      };
-    } catch (e) {
-      console.log("errror", e);
+  async registration(
+    email: string,
+    password: string,
+    firstName: string,
+    surName: string
+  ) {
+    const candidate = await userModels.findOne({ email });
+    console.log("candidate", candidate);
+    if (candidate) {
+      throw new Error(`Пользователь с таким ${email} уже существует`);
     }
+    const hashPassword = await bcrypt.hash(password, 3);
+    const activationCode = uuidv4();
+    const user = await userModels.create({
+      email,
+      password: hashPassword,
+      activationCode,
+      firstName,
+      surName,
+    });
+    const activationLink = `${process.env.API_URL}/activate/to/${activationCode}`;
+    await mailService.sendEmail(
+      email,
+      "link for activation",
+      "",
+      `<p><a href="${activationLink}">Move for activation</a></p>`
+    );
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens({ ...userDto });
+    await tokenService.saveToken(userDto._id, tokens.refreshToken);
+    return {
+      user: userDto,
+      ...tokens,
+    };
   }
+
   async activate(activationLink: any) {
     const user = await userModels.findOne({ activationLink });
     if (!user) {
@@ -74,7 +80,9 @@ class UserService {
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (isPasswordValid) {
         const userDto = new UserDto(user);
-        return userDto;
+        const tokens = tokenService.generateTokens({ ...userDto });
+        await tokenService.saveToken(userDto._id, tokens.refreshToken);
+        return { ...tokens, userDto };
       } else {
         throw new Error(`Неверный пароль`);
       }

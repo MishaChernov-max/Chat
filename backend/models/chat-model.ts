@@ -1,17 +1,19 @@
 import { model, Schema } from "mongoose";
 
-const chatSchema = new Schema({
-  roomId: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  messages: [
-    {
-      id: String,
-      text: String,
-      timestamp: { type: Date, default: Date.now },
+const chatScema = new Schema(
+  {
+    participants: [
+      { type: Schema.Types.ObjectId, ref: "User", required: true },
+    ],
+    messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+    type: {
+      type: String,
+      enum: ["direct", "group"],
+      require: true,
     },
-  ],
-});
-export default model("Chat", chatSchema);
+    name: String,
+    avatar: String,
+  },
+  { versionKey: false, timestamps: true }
+);
+export default model("Chat", chatScema);

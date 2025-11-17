@@ -1,20 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
-  getChat,
   getChatsInitialData,
   getUser,
   getUsers,
   searchChats,
-  type ChatData,
   type userType,
 } from "../../api/users";
-import type { GroupData } from "./groupSlice";
-
-export type ChatCacheType = {
-  byUserId: { [key: string]: ChatData };
-  byRoomId: { [key: string]: string };
-  byGroupId: { [key: string]: GroupData };
-};
+import { getChat } from "../../api/chats";
+import { addChat, type ChatType } from "./chatsSlice";
+import type { AppDispatch, RootState } from "..";
 
 export type ChatOverview = {
   roomId: string;
@@ -24,6 +18,9 @@ export type ChatOverview = {
 };
 
 export type fetchUsersSliceType = {
+  chatLoading: boolean;
+  chatError: string | null;
+  chat: ChatType | null;
   isLoading: boolean;
   isError: string | null;
   users: userType[];
@@ -34,11 +31,7 @@ export type fetchUsersSliceType = {
   chats: userType[];
   isSearchLoading: boolean;
   isSearchError: string | null;
-  chatCache: ChatCacheType;
   typingUsers: string[];
-  isOverviewLoading: boolean;
-  isOverviewError: string | null;
-  chatsOverview: ChatOverview[];
 };
 
 export const fetchUser = createAsyncThunk(
@@ -70,7 +63,6 @@ export const fetchUsers = createAsyncThunk<userType[] | void>(
       const users = await getUsers();
       return users;
     } catch (error) {
-      console.error(error);
       window.location.href = "/loginPage";
     }
   }
@@ -89,14 +81,29 @@ export const fetchSearchResults = createAsyncThunk(
 );
 
 export const getChatThunk = createAsyncThunk<
-  ChatData,
-  { Id: string; userId: string; type: string }
->("users/getChatThunk", async ({ Id, userId, type }) => {
-  const response = await getChat(Id, userId, type);
-  return response.data;
+  ChatType,
+  { Id: string; userId: string },
+  { state: RootState; dispatch: AppDispatch }
+>("users/getChatThunk", async ({ Id, userId }, { getState, dispatch }) => {
+  try {
+    const state = getState();
+    const chatCache = state.chats.chatCache;
+    const response = await getChat(Id, userId);
+    const chat = response.data;
+    const currentChat = chatCache.find((c) => c._id === chat._id);
+    if (!currentChat) {
+      dispatch(addChat(chat));
+    }
+    return chat;
+  } catch (error) {
+    throw error;
+  }
 });
 
 const initialState: fetchUsersSliceType = {
+  chatLoading: false,
+  chatError: null,
+  chat: null,
   isUserLoading: false,
   isError: null,
   users: [],
@@ -107,79 +114,75 @@ const initialState: fetchUsersSliceType = {
   chats: [],
   isSearchLoading: false,
   isSearchError: null,
-  chatCache: { byRoomId: {}, byUserId: {}, byGroupId: {} },
   typingUsers: [],
-  isOverviewLoading: false,
-  isOverviewError: null,
-  chatsOverview: [],
 };
 
 const fetchUsersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    updateChatCacheByGroupId: (state, { payload }) => {
-      const cache = state.chatCache;
-      const group = cache.byGroupId[payload.index];
-      if (!group) {
-        state.chatCache.byGroupId[payload.index] = payload.group;
-      } else {
-        state.chatCache.byGroupId[payload.index].messages = [
-          ...(payload.messages || []),
-        ];
-      }
-    },
-    updateChatCache: (state, { payload }) => {
-      switch (payload.action) {
-        case "ADD_MESSAGE":
-          const userId = state.chatCache.byRoomId[payload.index];
-          if (!userId || !state.chatCache.byUserId[userId]) {
-            return;
-          }
-          state.chatCache.byUserId[userId].chat.messages = payload.messages;
-          break;
-        case "UPDATE_UNREAD_COUNT":
-          const uId = state.chatCache.byRoomId[payload.index];
-          if (!uId || !state.chatCache.byUserId[uId]) {
-            return;
-          }
-          state.chatCache.byUserId[uId].chat.unreadCount = payload.unreadCount;
-          break;
-        case "CLEAR_NOTIFICATIONS":
-          const chat = state.chatCache.byUserId[payload.index];
-          if (chat) {
-            state.chatCache.byUserId[payload.index].chat.unreadCount = 0;
-            fetch("http://localhost:5000/api/mark-as-read", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                roomId: chat.chat.roomId,
-                userId: payload.currentId,
-              }),
-            }).then((res) => {
-              if (!res.ok) {
-                throw new Error(`Error status: ${res.status}`);
-              } else {
-                console.log("Получил успешный ответ");
-              }
-            });
-            console.log("payload.currentId", payload.currentId);
-          }
-          break;
-      }
-    },
-    updateChatCacheByUserId: (state, { payload }) => {
-      const chat = state.chatCache.byUserId[payload.index];
-      if (!chat) {
-        state.chatCache.byUserId[payload.index] = {
-          ...payload.chat,
-          unreadCount: 0,
-        };
-        state.chatCache.byRoomId[payload.chat.roomId] = payload.index;
-      }
-    },
+    // updateChatCacheByGroupId: (state, { payload }) => {
+    //   const cache = state.chatCache;
+    //   const group = cache.byGroupId[payload.index];
+    //   if (!group) {
+    //     state.chatCache.byGroupId[payload.index] = payload.group;
+    //   } else {
+    //     state.chatCache.byGroupId[payload.index].messages = [
+    //       ...(payload.messages || []),
+    //     ];
+    //   }
+    // },
+    // updateChatCache: (state, { payload }) => {
+    //   switch (payload.action) {
+    //     case "ADD_MESSAGE":
+    //       const userId = state.chatCache.byRoomId[payload.index];
+    //       if (!userId || !state.chatCache.byUserId[userId]) {
+    //         return;
+    //       }
+    //       state.chatCache.byUserId[userId].chat.messages = payload.messages;
+    //       break;
+    //     case "UPDATE_UNREAD_COUNT":
+    //       const uId = state.chatCache.byRoomId[payload.index];
+    //       if (!uId || !state.chatCache.byUserId[uId]) {
+    //         return;
+    //       }
+    //       state.chatCache.byUserId[uId].chat.unreadCount = payload.unreadCount;
+    //       break;
+    //     case "CLEAR_NOTIFICATIONS":
+    //       const chat = state.chatCache.byUserId[payload.index];
+    //       if (chat) {
+    //         state.chatCache.byUserId[payload.index].chat.unreadCount = 0;
+    //         fetch("http://localhost:5000/api/mark-as-read", {
+    //           method: "POST",
+    //           headers: {
+    //             "Content-Type": "application/json",
+    //           },
+    //           body: JSON.stringify({
+    //             roomId: chat.chat.roomId,
+    //             userId: payload.currentId,
+    //           }),
+    //         }).then((res) => {
+    //           if (!res.ok) {
+    //             throw new Error(`Error status: ${res.status}`);
+    //           } else {
+    //             console.log("Получил успешный ответ");
+    //           }
+    //         });
+    //         console.log("payload.currentId", payload.currentId);
+    //       }
+    //       break;
+    //   }
+    // },
+    // updateChatCacheByUserId: (state, { payload }) => {
+    //   const chat = state.chatCache.byUserId[payload.index];
+    //   if (!chat) {
+    //     state.chatCache.byUserId[payload.index] = {
+    //       ...payload.chat,
+    //       unreadCount: 0,
+    //     };
+    //     state.chatCache.byRoomId[payload.chat.roomId] = payload.index;
+    //   }
+    // },
     setTypingUser: (state, { payload: userId }) => {
       state.typingUsers = [...state.typingUsers, userId];
     },
@@ -199,6 +202,19 @@ const fetchUsersSlice = createSlice({
     },
   },
   extraReducers(builder) {
+    builder.addCase(getChatThunk.pending, (state) => {
+      state.chatLoading = true;
+      state.chatError = null;
+    });
+    builder.addCase(getChatThunk.fulfilled, (state, action) => {
+      state.chatLoading = false;
+      state.chat = action.payload;
+      state.chatError = null;
+    });
+    builder.addCase(getChatThunk.rejected, (state, action) => {
+      state.chatLoading = false;
+      state.chatError = action.error.message ?? null;
+    });
     builder.addCase(fetchUsers.pending, (state) => {
       state.isLoading = true;
       state.isError = null;
@@ -236,25 +252,6 @@ const fetchUsersSlice = createSlice({
     builder.addCase(fetchSearchResults.rejected, (state, action) => {
       (state.isSearchLoading = false),
         (state.isSearchError = action.error.message ?? null);
-    });
-    builder.addCase(getChatThunk.fulfilled, (state, action) => {
-      const cache = state.chatCache;
-      const { userId } = action.payload;
-      const { roomId } = action.payload.chat;
-      cache.byUserId[userId] = action.payload;
-      cache.byRoomId[roomId] = userId;
-    });
-    builder.addCase(fetchChatsOverview.pending, (state) => {
-      state.isOverviewLoading = true;
-      state.isOverviewError = null;
-    });
-    builder.addCase(fetchChatsOverview.fulfilled, (state, action) => {
-      state.isOverviewLoading = false;
-      state.chatsOverview = action.payload;
-    });
-    builder.addCase(fetchChatsOverview.rejected, (state, action) => {
-      state.isOverviewLoading = false;
-      state.isOverviewError = action?.error.message ?? null;
     });
   },
 });

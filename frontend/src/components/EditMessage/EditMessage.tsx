@@ -5,16 +5,13 @@ import type { MessageType } from "../Message/Message";
 
 export type EditMessageType = {
   message: MessageType;
-  isEditing: boolean;
   SetIsEditing: Dispatch<SetStateAction<boolean>>;
 };
 
-function EditMessage({ message, isEditing, SetIsEditing }: EditMessageType) {
+function EditMessage({ message, SetIsEditing }: EditMessageType) {
   const { editMessage } = useEditMessage();
   const handleClickClose = () => {
-    if (isEditing) {
-      SetIsEditing(false);
-    }
+    SetIsEditing(false);
   };
   const [editText, setEditText] = useState<string>(message.text);
   const InputStyle = {
@@ -31,7 +28,7 @@ function EditMessage({ message, isEditing, SetIsEditing }: EditMessageType) {
     <>
       <form
         onSubmit={() => {
-          editMessage(editText, message.messageId);
+          editMessage(editText, message._id!);
           handleClickClose();
         }}
         style={{

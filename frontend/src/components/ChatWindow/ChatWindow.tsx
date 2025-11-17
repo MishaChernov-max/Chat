@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
-import Header from "../Header/Header";
 import MessagePanel from "../MeesagePanel/MessagePanel";
 import Footer from "../Footer/Footer";
+import ChatHeader from "../ChatHeader/ChatHeader";
 
 function ChatWindow() {
   return (
@@ -16,7 +16,7 @@ function ChatWindow() {
           height: "100vh",
         }}
       >
-        <Header />
+        <ChatHeader />
         <MessagePanel />
         <Footer />
       </Box>

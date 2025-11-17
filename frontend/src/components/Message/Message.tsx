@@ -9,18 +9,29 @@ import ForwardMessage from "../forwardMessage/forwardMessage";
 import EditMessage from "../EditMessage/EditMessage";
 import handleClickChatModal from "../../utils/handleClckChatModal";
 import formatTime from "../../utils/formatTime";
-import type { ChatType } from "../../hooks/useSendMessage";
 import FriendMessage from "../FriendMessage/FriendMessage";
+import type { userType } from "../../api/users";
 
 export type MessageType = {
-  id: string;
+  _id?: string;
+  chat: string;
+  sender: userType;
   text: string;
-  messageId: string;
-  photo?: string;
-  createdAt?: Date;
   forwardedFrom?: string;
   isEdited?: boolean;
-  type?: ChatType;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type MessageTypePayload = {
+  _id?: string;
+  chat: string;
+  sender: string;
+  text: string;
+  forwardedFrom?: string;
+  isEdited?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type ContextMenuType = {
@@ -28,7 +39,8 @@ export type ContextMenuType = {
   mouseY: number;
 };
 function Message(message: MessageType) {
-  const { id, text, messageId, createdAt, forwardedFrom, isEdited } = message;
+  const { _id, text, sender, createdAt, forwardedFrom, isEdited, updatedAt } =
+    message;
   const dateTime = formatTime(createdAt || "");
 
   const { isLoading } = useSelector((state: RootState) => state.messageSlice);
@@ -52,19 +64,15 @@ function Message(message: MessageType) {
     return () => {
       document.removeEventListener("click", handleClick);
     };
-  }, [id]);
-  const isMyMessage = id === user?._id;
-  if (!isMyMessage) {
+  }, [_id]);
+  const isMyMessage = sender._id === user?._id;
+  if (isMyMessage) {
     return <FriendMessage message={message} />;
   }
   return (
     <>
       {isEditing ? (
-        <EditMessage
-          message={message}
-          isEditing={isEditing}
-          SetIsEditing={SetIsEditing}
-        />
+        <EditMessage message={message} SetIsEditing={SetIsEditing} />
       ) : (
         <Box
           onContextMenu={handleContextMenu}
@@ -93,7 +101,7 @@ function Message(message: MessageType) {
           {contextMenu && (
             <IconMenu
               text={text}
-              messageId={messageId}
+              messageId={_id!}
               showModal={showModal}
               setShowModal={setShowModal}
               isEditing={isEditing}

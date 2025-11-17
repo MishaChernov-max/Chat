@@ -11,9 +11,10 @@ import {
 import storage from "redux-persist/lib/storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { reducer as MessagesReducer } from "./slices/messagesSlice";
-import { reducer as fetchUsersSlice } from "./slices/fetchUsersSlice";
+import { reducer as fetchUsersSlice } from "./slices/usersSlice";
 import { reducer as authSlice } from "./slices/authSlice";
 import { reducer as groupSlice } from "./slices/groupSlice";
+import { reducer as chatSlice } from "./slices/chatsSlice";
 
 export type AppStore = typeof store;
 
@@ -22,6 +23,7 @@ export type RootState = ReturnType<AppStore["getState"]>;
 export type AppDispatch = AppStore["dispatch"];
 
 export const reducers = combineReducers({
+  chats: chatSlice,
   messageSlice: MessagesReducer,
   users: fetchUsersSlice,
   auth: authSlice,
