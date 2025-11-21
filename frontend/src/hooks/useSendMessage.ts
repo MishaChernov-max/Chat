@@ -6,6 +6,7 @@ import type {
 import { useSocket } from "../context/SocketContext";
 import type { RootState } from "../store";
 import useActions from "./useActions";
+import { useParams } from "react-router-dom";
 
 export type messagePayloadType = {
   roomId: string;
@@ -15,28 +16,24 @@ export type messagePayloadType = {
 export type ChatType = "chat" | "group";
 
 export const useSendMessage = () => {
-  const { markLoading } = useActions();
+  const { id } = useParams();
   const socket = useSocket();
-  const { chat } = useSelector((state: RootState) => state.chats);
   const { roomId } = useSelector((state: RootState) => state.messageSlice);
   const { user } = useSelector((state: RootState) => state.auth);
   const userId = user?._id;
-
   const sendMessage = (userText: string) => {
-    if (!userText.trim() || !chat?._id || !user?._id) {
+    if (!userText.trim() || !id || !user?._id) {
       return;
     }
-
     const messagePayload: MessageTypePayload = {
-      chat: chat._id,
+      chat: id,
       sender: user._id,
       text: userText,
     };
-    console.log("userText ", userText);
-    console.log("messagePayload ", messagePayload);
-    socket?.emit("message", messagePayload);
 
-    markLoading();
+    console.log("messagePayload ", messagePayload);
+    console.log("socket ", socket);
+    socket?.emit("message", messagePayload);
   };
 
   const sendFileMessage = async (file: File, userText: string = "") => {

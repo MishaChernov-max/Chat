@@ -34,7 +34,7 @@ export type updateUserType = {
 
 export async function getUsers() {
   const response = await instance.get<getUsersResponseType>("/users");
-  console.log("users", response.data.users);
+  // console.log("users", response.data.users);
   return response.data.users;
 }
 

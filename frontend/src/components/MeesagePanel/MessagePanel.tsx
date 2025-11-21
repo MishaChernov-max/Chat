@@ -2,10 +2,14 @@ import Box from "@mui/material/Box";
 import Messages from "../Messages/Messages";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import { Alert, Badge, CircularProgress, Snackbar } from "@mui/material";
+import { CircularProgress, Snackbar } from "@mui/material";
+import { useChatMessages } from "../../store/slices/messagesSlice";
+import { useChat } from "../Chat/hooks/useChat";
 
 function MessagePanel() {
-  const { chatLoading, chatError, chat } = useSelector(
+  useChat();
+  const messages = useChatMessages();
+  const { chatLoading, chatError } = useSelector(
     (state: RootState) => state.chats
   );
   return (
@@ -35,7 +39,7 @@ function MessagePanel() {
         {chatLoading ? (
           <CircularProgress />
         ) : (
-          <Messages messages={chat?.messages || []} />
+          <Messages messages={messages || []} />
         )}
       </Box>
     </>

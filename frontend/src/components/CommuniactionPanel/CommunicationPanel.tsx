@@ -18,7 +18,7 @@ function CommunicationPanel({ sx }: ChatListPanelType) {
         }}
       >
         <ChatListPanel showFilterTabs={true} isLink={true} />
-        <CallListPanel />
+        {/* <CallListPanel /> */}
       </Stack>
     </>
   );

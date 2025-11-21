@@ -2,15 +2,17 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
-import PaymentsIcon from "@mui/icons-material/Payments";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { Input, Typography } from "@mui/material";
-import { useSendMessage, type ChatType } from "../../hooks/useSendMessage";
+import { useSendMessage } from "../../hooks/useSendMessage";
 import { useSocket } from "../../context/SocketContext";
 import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { useParams } from "react-router-dom";
 import FileAttachment from "../FileAttachment/FileAttachment";
 import CloseIcon from "@mui/icons-material/Close";
+import SendIcon from "@mui/icons-material/Send";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store";
 
 export type InputFieldType = {
   showEmoji: boolean;
@@ -25,7 +27,6 @@ function InputField({
   value,
   setValue,
 }: InputFieldType) {
-  const { type } = useParams();
   const handleClickEmoji = () => {
     EmojiClick();
   };
@@ -37,7 +38,7 @@ function InputField({
     }
   };
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
-
+  const { user } = useSelector((state: RootState) => state.auth);
   const handleFileSelect = (file: File) => {
     setAttachedFile(file);
   };
@@ -45,7 +46,7 @@ function InputField({
   const removeFile = () => {
     setAttachedFile(null);
   };
-
+  const { id } = useParams();
   const socket = useSocket();
   const typingTimerRef = useRef<number | null>(null);
   const typingRef = useRef(false);
@@ -97,16 +98,11 @@ function InputField({
           </IconButton>
           <form
             style={{ width: "100%" }}
-            onSubmit={async (e) => {
+            onSubmit={(e) => {
               e.preventDefault();
-
-              if (attachedFile) {
-                await sendFileMessage(attachedFile, value);
-              } else {
-                console.log("type", type);
-                sendMessage(value);
-              }
-              setAttachedFile(null);
+              console.log("socket", socket);
+              console.log("submit сработал");
+              sendMessage(value);
               setValue("");
             }}
           >
@@ -160,16 +156,23 @@ function InputField({
         </Stack>
         <Stack direction="row">
           <FileAttachment onFileSelect={handleFileSelect} />
-          <IconButton>
-            <PaymentsIcon
-              sx={{ fill: "white", width: "40px", height: "40px" }}
-            />
-          </IconButton>
-          <IconButton>
-            <CameraAltIcon
-              sx={{ fill: "white", width: "40px", height: "40px" }}
-            />
-          </IconButton>
+
+          {value ? (
+            <IconButton
+              onClick={() => {
+                sendMessage(value);
+                setValue("");
+              }}
+            >
+              <SendIcon sx={{ fill: "white", width: "40px", height: "40px" }} />
+            </IconButton>
+          ) : (
+            <IconButton>
+              <CameraAltIcon
+                sx={{ fill: "white", width: "40px", height: "40px" }}
+              />
+            </IconButton>
+          )}
         </Stack>
       </Box>
     </>

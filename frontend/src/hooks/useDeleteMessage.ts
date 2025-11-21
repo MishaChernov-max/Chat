@@ -7,12 +7,10 @@ import { useParams } from "react-router-dom";
 const useDeleteMessage = (messageId: string) => {
   const socket = useSocket();
   const params = useParams();
-  const { markLoading } = useActions();
   const { roomId } = useSelector((state: RootState) => state.messageSlice);
   const message = { roomId: roomId, messageId: messageId, type: params?.type };
   const handleDeleteClick = () => {
     socket?.emit("message-delete", message);
-    markLoading();
   };
   return { handleDeleteClick };
 };

@@ -11,9 +11,20 @@ import type { RootState } from "../store";
 import useActions from "../hooks/useActions";
 import { clearLocalStorage, getLocalStorage } from "../libs/localStorageApi";
 import { Slide, Snackbar } from "@mui/material";
+import type { ChatType } from "../store/slices/chatsSlice";
+import type { userType } from "../api/users";
 
 type SocketContextProviderType = {
   children: ReactNode;
+};
+
+type ReceivedMessage = {
+  _id: string;
+  chat: ChatType;
+  sender: userType;
+  text: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 type NotificationData = {
@@ -30,10 +41,14 @@ export const SocketProvider = ({ children }: SocketContextProviderType) => {
   const [open, setOpen] = useState<boolean>(false);
   const [currentNotification, setCurrentNotification] =
     useState<NotificationData | null>();
-  const { getOnlineUsers, getDisconnectUser, getOnlineUser, updateChatCache } =
-    useActions();
+  const {
+    getOnlineUsers,
+    getDisconnectUser,
+    getOnlineUser,
+    updateChatMessagesCache,
+  } = useActions();
 
-  const { chat } = useSelector((state: RootState) => state.chats);
+  const { activeChat: chat } = useSelector((state: RootState) => state.chats);
 
   useEffect(() => {
     const token = getLocalStorage("accessToken");
@@ -69,14 +84,15 @@ export const SocketProvider = ({ children }: SocketContextProviderType) => {
     };
   }, [user?._id]);
   useEffect(() => {
-    const handleNewMessage = (message: any) => {
-      console.log("Получил новое сообщение", message);
-      updateChatCache(message);
+    const handleNewMessage = (message: ReceivedMessage) => {
+      console.log("Ловлю новое сообщение", message);
+      updateChatMessagesCache(message);
     };
     socket?.on("new-message", handleNewMessage);
     return () => {
       // socket?.off("notification", handleNotification);
       // socket?.off("unread_update", handleUnreadUpdate);
+
       socket?.off("new-message", handleNewMessage);
     };
   }, [socket, chat?._id]);

@@ -8,8 +8,9 @@ import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import useLoginPage from "../../hooks/useLoginPage";
 import useActions from "../../hooks/useActions";
-import { Alert, CircularProgress } from "@mui/material";
+import { Alert, CircularProgress, Divider } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
+import googleIcon from "../../assets/google.svg";
 
 export type AuthFormData = {
   email: string;
@@ -70,7 +71,7 @@ function AuthForm() {
               component={Link}
               to="/loginPage"
               sx={{
-                background: "#19c5dbff",
+                background: "#322F2FE0",
                 borderRadius: "15px",
                 color: "white",
                 "&:hover": { color: "#dddbdbff" },
@@ -81,20 +82,37 @@ function AuthForm() {
             <Button
               component={Link}
               to="/loginPage/signUp"
-              sx={{ color: "white", "&:hover": { color: "#dddbdbff" } }}
+              sx={{
+                color: "white",
+                "&:hover": { color: "#dddbdbff" },
+              }}
             >
               Login
             </Button>
           </Box>
         </Typography>
         {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
-        <Stack sx={{ alignItems: "flex-start" }}>
-          <Typography variant="h4" component="h4" sx={{ marginBottom: "24px" }}>
-            Sign Up
+        <Stack sx={{ alignItems: "center" }}>
+          <Typography
+            variant="h2"
+            component="h2"
+            fontWeight={700}
+            sx={{ marginBottom: "24px" }}
+            color="#FFFFFF"
+          >
+            Welcome <br />
+            to ExploreMe 👋
           </Typography>
-
+          <Typography
+            variant="subtitle1"
+            component="small"
+            sx={{ marginBottom: "24px", whiteSpace: "nowrap" }}
+            color="#CBCAD7"
+          >
+            Kindly fill in your details below to create an account
+          </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack sx={{ alignItems: "flex-start", marginTop: "16px", gap: 2 }}>
+            <Stack sx={{ alignItems: "center", marginTop: "16px", gap: 4 }}>
               <Controller
                 name="email"
                 control={control}
@@ -166,7 +184,7 @@ function AuthForm() {
                   <CustomInput
                     {...field}
                     label="firstName"
-                    password={true}
+                    password={false}
                     error={!!errors.firstName}
                     helperText={errors.firstName?.message}
                   />
@@ -182,13 +200,12 @@ function AuthForm() {
                   <CustomInput
                     {...field}
                     label="surName"
-                    password={true}
+                    password={false}
                     error={!!errors.surName}
                     helperText={errors.surName?.message}
                   />
                 )}
               />
-
               <Typography
                 variant="h6"
                 component="h6"
@@ -199,18 +216,67 @@ function AuthForm() {
               <Button
                 type="submit"
                 sx={{
-                  background: "#003465",
+                  textTransform: "none",
+                  minWidth: "505px",
                   width: "100%",
                   borderRadius: "10px",
                   padding: "10px",
+                  backgroundColor: "black",
                   color: "#FFFFFF",
+                  background: "#7A5AF8",
+                  "&:hover": {
+                    background: "#5f43cfff",
+                  },
                 }}
               >
                 {isLoading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : (
-                  <span>Sign up</span>
+                  <span>Register Account</span>
                 )}
+              </Button>
+
+              <Stack direction={"row"} alignItems={"center"} gap={2}>
+                <Divider
+                  sx={{
+                    borderColor: "#8692A6",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    my: 2,
+                    width: "230px",
+                  }}
+                />
+                Or
+                <Divider
+                  sx={{
+                    borderColor: "#8692A6",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    my: 2,
+                    width: "230px",
+                  }}
+                />
+              </Stack>
+              <Button
+                sx={{
+                  textTransform: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  minWidth: "505px",
+                  width: "100%",
+                  borderRadius: "10px",
+                  padding: "15px",
+                  backgroundColor: "black",
+                  color: "#FFFFFF",
+                  background: "#100F14",
+                  "&:hover": {
+                    background: "#7A5AF8",
+                  },
+                }}
+              >
+                <img src={googleIcon} alt="Google-icon" />
+                Register with Google
               </Button>
             </Stack>
           </form>

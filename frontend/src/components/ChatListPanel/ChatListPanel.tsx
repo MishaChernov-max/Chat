@@ -37,7 +37,7 @@ function ChatListPanel({ sx, showFilterTabs, isLink }: ChatListPanelType) {
           paddingRight: "44px",
           color: "white",
           ml: "4px",
-          height: "665px",
+          height: "100vh",
           borderRadius: "0 0 20px 20px",
           overflow: "auto",
           ...{ sx },

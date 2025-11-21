@@ -42,6 +42,7 @@ instance.interceptors.response.use(
       console.log("error", error);
       if (error?.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
+
         console.log("ERROR_STATUS_401");
         const accessToken = getLocalStorage("accessToken");
         if (!accessToken) {
@@ -54,8 +55,8 @@ instance.interceptors.response.use(
           originalRequest.headers.authorization = `Bearer ${newAccessToken}`;
           return instance(originalRequest);
         } else {
-          clearLocalStorage("accessToken");
-          window.location.href = "/loginPage";
+          // clearLocalStorage("accessToken");
+          // window.location.href = "/loginPage";
         }
       }
     } catch (error) {

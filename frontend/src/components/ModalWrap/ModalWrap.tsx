@@ -10,9 +10,8 @@ function ModalWrap({ children }: ModalWrapType) {
       <Box
         sx={{
           margin: "0 auto",
-          background: "#059BE5",
-          maxWidth: "410px",
-          color: "white",
+          background: "transparent",
+          color: "#FFFFFF",
           padding: "40px 80px",
           borderRadius: "30px",
           minHeight: "500px",

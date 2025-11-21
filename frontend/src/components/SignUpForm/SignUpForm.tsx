@@ -9,7 +9,8 @@ import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import useLoginPage from "../../hooks/useLoginPage";
 import useActions from "../../hooks/useActions";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Divider } from "@mui/material";
+import googleIcon from "../../assets/google.svg";
 export type LoginFormData = {
   email: string;
   password: string;
@@ -70,8 +71,8 @@ function SignUpForm() {
               component={Link}
               to="/loginPage/signUp"
               sx={{
-                background: "#19c5dbff",
-                borderRadius: "10px",
+                background: "#322F2FE0",
+                borderRadius: "15px",
                 color: "white",
                 "&:hover": { color: "#dddbdbff" },
               }}
@@ -140,12 +141,20 @@ function SignUpForm() {
               <Button
                 type="submit"
                 sx={{
-                  background: "#003465",
+                  textTransform: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  minWidth: "505px",
                   width: "100%",
                   borderRadius: "10px",
-                  marginTop: 3,
-                  padding: "10px",
+                  padding: "15px",
+                  backgroundColor: "black",
                   color: "#FFFFFF",
+                  background: "#7A5AF8",
+                  "&:hover": {
+                    background: "#5f43cfff",
+                  },
                 }}
               >
                 {isLoading ? (
@@ -153,6 +162,48 @@ function SignUpForm() {
                 ) : (
                   <span>Login</span>
                 )}
+              </Button>
+              <Stack direction={"row"} alignItems={"center"} gap={2}>
+                <Divider
+                  sx={{
+                    borderColor: "#8692A6",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    my: 2,
+                    width: "230px",
+                  }}
+                />
+                Or
+                <Divider
+                  sx={{
+                    borderColor: "#8692A6",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    my: 2,
+                    width: "230px",
+                  }}
+                />
+              </Stack>
+              <Button
+                sx={{
+                  textTransform: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  minWidth: "505px",
+                  width: "100%",
+                  borderRadius: "10px",
+                  padding: "15px",
+                  backgroundColor: "black",
+                  color: "#FFFFFF",
+                  background: "#100F14",
+                  "&:hover": {
+                    background: "#7A5AF8",
+                  },
+                }}
+              >
+                <img src={googleIcon} alt="Google-icon" />
+                Login with Google
               </Button>
             </Stack>
           </form>

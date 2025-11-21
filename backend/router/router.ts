@@ -26,7 +26,9 @@ router.get("/chat/:id", chatController.getChatById);
 
 router.post("/createMessage", messageController.createMessageRest);
 
-router.get("/getMessages", messageController.getMessages);
+router.get("/messages", messageController.getMessages);
+
+router.get("/messages/:id", messageController.sendMessages);
 
 router.get("/activate/:link", userController.activate);
 

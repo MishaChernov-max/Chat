@@ -47,9 +47,7 @@ io.use(async (socket: Socket, next) => {
   }
 });
 
-const userSocket: Record<string, string> = {};
-
-io.on("connection", async (socket) => {
+io.on("connection", async (socket: Socket) => {
   console.log("connection", socket.id);
   const userId = socket.handshake.auth.userId;
   const token = socket.handshake.auth.token;
@@ -64,7 +62,6 @@ io.on("connection", async (socket) => {
   socket.on("register", (userId) => {
     // Здесь должна быть ваша логика аутентификации (например, проверка JWT)
     console.log(`Регистрируем пользователя ${userId} для сокета ${socket.id}`);
-    userSocket[userId] = socket.id;
   });
 
   socket.broadcast.emit("new-user-online", userId);
@@ -78,17 +75,15 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("message", async (messagePayload) => {
+    console.log("Получил соообщение", messagePayload);
     const message = await messageController.createMessage(messagePayload);
     const participants = message.chat.participants;
     console.log("participants", participants);
     console.log("Получилось такое сообщение для отправки клиенту", message);
-    console.log("userSocket", userSocket);
 
     participants.forEach((participant) => {
       console.log("participant", participant);
-      socket
-        .to(userSocket[participant.toString()])
-        .emit("new-message", message);
+      io.to(participant.toString()).emit("new-message", message);
     });
   });
 

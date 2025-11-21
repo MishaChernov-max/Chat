@@ -17,9 +17,9 @@ class MessageService {
     return messageModel
       .find({
         chatId: chatId,
-        _id: {
-          $lte: lastId,
-        },
+        // _id: {
+        //   $lte: lastId,
+        // },
       })
       .sort({ _id: -1 })
       .limit(limit);
@@ -54,7 +54,6 @@ class MessageService {
 
     const newMessage = await messageModel
       .findOne({ _id: message._id })
-      .select({ type: 0 })
       .populate({ path: "sender", select: this.USER_EXLUDED_FIELDS })
       .populate("chat")
       .lean();
@@ -69,6 +68,9 @@ class MessageService {
     return newMessage as unknown as IMessageResponse;
   }
 
+  async sendMessages(id: string) {
+    return await messageModel.find({ chat: id }).populate("sender");
+  }
   // async getHistory(roomId: string) {
   //   const chat = await chatModel.findOne({ roomId: roomId });
   //   if (!chat) {

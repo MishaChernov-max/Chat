@@ -3,16 +3,20 @@ import type { userType } from "../../api/users";
 import { getChatById, getChats } from "../../api/chats";
 import useActions from "../../hooks/useActions";
 import type { MessageType } from "../../components/Message/Message";
+import { useSelector } from "react-redux";
+import type { RootState } from "..";
 
 export type ChatType = {
   _id: string;
   participants: userType[];
   createdAt: Date;
   updatedAt: Date;
-  messages: MessageType[];
-  name: string;
+  messages: MessageType[]; //Отдельная сущность
+  name: string; //
   avatar?: string;
 };
+//1)Убрать преписку Chats для loading,error.
+// 2)Убрать loading,error для chat
 
 export type chatsSliceType = {
   chatsLoading: boolean;
@@ -21,7 +25,7 @@ export type chatsSliceType = {
   chatCache: ChatType[];
   chatLoading: boolean;
   chatError: string | null;
-  chat: ChatType | null;
+  activeChat: ChatType | null;
 };
 
 const initialState: chatsSliceType = {
@@ -31,7 +35,7 @@ const initialState: chatsSliceType = {
   chatCache: [],
   chatLoading: false,
   chatError: null,
-  chat: null,
+  activeChat: null,
 };
 
 export const loadUserChats = createAsyncThunk(
@@ -69,7 +73,7 @@ const chatSlice = createSlice({
       state.chatCache = [...state.chatCache, chat];
     },
     replaceChat: (state, { payload: chat }) => {
-      state.chat = chat;
+      state.activeChat = chat;
     },
     updateChatCache: (state, { payload: message }) => {
       console.log("новый message с сервера", message);
@@ -100,7 +104,7 @@ const chatSlice = createSlice({
     });
     builder.addCase(getChatByIdThunk.fulfilled, (state, action) => {
       state.chatLoading = false;
-      state.chat = action.payload;
+      state.activeChat = action.payload;
       state.chatError = null;
     });
     builder.addCase(getChatByIdThunk.rejected, (state, action) => {
@@ -113,3 +117,6 @@ const chatSlice = createSlice({
 export const { actions, reducer } = chatSlice;
 
 export const { addChat } = chatSlice.actions;
+
+export const useChats = () =>
+  useSelector((state: RootState) => state.chats.chats);

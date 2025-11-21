@@ -54,6 +54,12 @@ class MessageController {
     res.json(messages);
   }
 
+  async sendMessages(req: Request, res: Response) {
+    const messages = await messageService.sendMessages(req.params.id);
+    console.log("messages", messages);
+    res.json(messages);
+  }
+
   // async getHistory(req: Request, res: Response) {
   //   if (req.body.type === "direct") {
   //     const { Id, userId } = req.body;

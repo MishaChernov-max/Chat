@@ -66,7 +66,15 @@ function Message(message: MessageType) {
     };
   }, [_id]);
   const isMyMessage = sender._id === user?._id;
-  if (isMyMessage) {
+  console.log(
+    "isMyMessage",
+    isMyMessage,
+    "sender._id",
+    sender._id,
+    "userid;",
+    user?._id
+  );
+  if (!isMyMessage) {
     return <FriendMessage message={message} />;
   }
   return (

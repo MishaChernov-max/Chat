@@ -62,4 +62,50 @@ class LinkedList {
     }
     return this;
   }
+  delete(value) {
+    if (!this.head) {
+      return null;
+    }
+    let deletedNode;
+    if (this.head === value && this.head) {
+      deletedNode = this.head;
+      this.head = this.head.next;
+      return deletedNode;
+    }
+    let currentNode = this.head;
+    while (currentNode.next) {
+      console.log("NEXT", currentNode.next);
+      if (currentNode.next.value === value) {
+        deletedNode = currentNode.next;
+        currentNode.next = currentNode.next.next; //2 должна смениться на null
+        console.log("Найденное значение", currentNode.next);
+        if (!currentNode.next) {
+          console.log("Попадаю в хвост", currentNode);
+          this.tail = currentNode;
+        }
+        return deletedNode;
+      }
+      currentNode = currentNode.next;
+    }
+    return null;
+  }
+  reverse() {
+    let currentNode = this.head;
+    let prev = null;
+    this.tail = this.head;
+    while (currentNode) {
+      const nextNode = currentNode.next;
+      currentNode.next = prev;
+      prev = currentNode;
+      currentNode = nextNode;
+    }
+    this.head = prev;
+  }
 }
+
+const list = new LinkedList();
+list.append(1);
+list.append(2);
+console.log("list", list);
+list.reverse(2);
+console.log("list", list);

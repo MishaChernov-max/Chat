@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useTypingForRoom } from "../../hooks/useTypingForRoom";
 import type { ChatType } from "../../store/slices/chatsSlice";
 import { Avatar, Badge } from "@mui/material";
+import { useRoomId } from "../../store/slices/messagesSlice";
 
 export type ChatTPropsType = {
   chat: ChatType;
@@ -16,9 +17,10 @@ function Chat({ chat, handleOnClick, isLink = true }: ChatTPropsType) {
   const { handleClick } = handleOnClick
     ? handleOnClick()
     : { handleClick: () => {} };
+  const roomId = useRoomId();
   const { typingUsers } = useSelector((state: RootState) => state.users);
-
   const { _id, name, avatar } = chat;
+  const isActive = roomId === _id;
   useTypingForRoom(_id);
   const isTyping = typingUsers.includes(_id);
 
@@ -40,7 +42,7 @@ function Chat({ chat, handleOnClick, isLink = true }: ChatTPropsType) {
           paddingLeft: "14px",
           paddingTop: "9px",
           paddingBottom: "12px",
-          bgcolor: "#312F2F",
+          bgcolor: isActive ? "#7A5AF8" : "#312F2F",
           marginTop: "20px",
           cursor: "pointer",
         }}
