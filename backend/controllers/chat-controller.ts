@@ -6,12 +6,10 @@ import chatModel from "../models/chat-model";
 import userModels from "../models/user-models";
 import { IChatResponse } from "../chats/interfaces";
 class ChatController {
-  async getParticipants(chat: IChatResponse) {
-    return await chatModel.findOne({ _id: chat._id }).populate("participants");
-  }
+  // async getParticipants(chat: IChatResponse) {
+  //   return await chatModel.findOne({ _id: chat._id }).populate("participants");
+  // }
   async getChat(req: Request, res: Response) {
-    //currentUserId беру из payload
-    //Временная заглушка req.body.currentUserId
     const chat = await chatService.getChat(
       req.body.currentUserId,
       req.body.friendUserId
@@ -32,6 +30,7 @@ class ChatController {
     res.json(chat);
   }
   async getAllChats(req: Request, res: Response) {
+    console.log("Захожу сюда");
     const userId = req.params.userId;
     console.log("userId", userId);
     const response = await chatService.getAllChats(userId);
@@ -40,7 +39,7 @@ class ChatController {
         (participant) => participant._id.toString() !== userId
       ) as unknown as IUser;
       chat.avatar = interlocutor?.avatar;
-      chat.name = interlocutor?.firstName;
+      chat.name = `${interlocutor?.firstName} ${interlocutor?.surName}`;
       return chat;
     });
     console.log("Send chats to user ", userId, response);
@@ -51,10 +50,6 @@ class ChatController {
     if (!chat) {
       return res.sendStatus(404);
     }
-    //Должен извлекать из токена userId и затем вычислять собеседника для дополнения чата avatar + name
-    // const friend = chat.participants.find(
-    //   (p) => p._id.toString() === req.body.friendUserId
-    // ) as unknown as IUser;
     res.json(chat);
   }
 }

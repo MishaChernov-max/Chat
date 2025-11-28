@@ -3,19 +3,27 @@ import Box from "@mui/material/Box";
 import logo from "../../assets/logo.svg";
 import ProfilePhoto from "../../assets/ProfilePhoto.svg";
 import home from "../../assets/home.svg";
-import NightMood from "../../assets/Night-Mood.svg";
 import search from "../../assets/search.svg";
 import save from "../../assets/save.svg";
 import share from "../../assets/share.svg";
 import settings from "../../assets/setting.svg";
 import IconButton from "@mui/material/IconButton";
-import type { SxProps } from "@mui/material";
+import { useState } from "react";
+import EditProfileModal from "../EditProfileModal/EditProfileModal";
+import MaterialUISwitch from "../MaterialUISwitch/MaterialUISwitch";
+import { useThemeMode } from "../../context/ThemeContext"; // <-- твой useThemeMode хук из контекста!
 import { clearLocalStorage } from "../../libs/localStorageApi";
+import type { SxProps } from "@mui/material";
 
 type MenuBarPropsType = {
   sx?: SxProps;
 };
+
 function MenuBar({ sx }: MenuBarPropsType) {
+  const [open, setOpen] = useState<boolean>(false);
+
+  const { isDark, setIsDark } = useThemeMode();
+
   return (
     <Box
       sx={{
@@ -24,10 +32,10 @@ function MenuBar({ sx }: MenuBarPropsType) {
         justifyContent: "space-between",
         alignItems: "center",
         height: "100vh",
-        maxWidth: "1024px",
+        maxWidth: "100px",
         backgroundColor: "#1F1D1D",
         marginRight: "4px",
-        ...{ sx },
+        ...sx,
       }}
     >
       <Box
@@ -79,7 +87,7 @@ function MenuBar({ sx }: MenuBarPropsType) {
           <IconButton
             href="/"
             component="a"
-            aria-label="Перейти на главную"
+            aria-label="Поиск"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -93,15 +101,15 @@ function MenuBar({ sx }: MenuBarPropsType) {
             <Box
               component="img"
               src={search}
-              alt="Логотип"
-              sx={{ display: "flex", flexDirection: "column", color: "white" }}
+              alt="Поиск"
+              sx={{ width: 40, height: 40 }}
             />
             Search
           </IconButton>
           <IconButton
             href="/"
             component="a"
-            aria-label="Перейти на главную"
+            aria-label="Сохранить"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -115,8 +123,8 @@ function MenuBar({ sx }: MenuBarPropsType) {
             <Box
               component="img"
               src={save}
-              alt="Логотип"
-              sx={{ display: "flex", flexDirection: "column", color: "white" }}
+              alt="Сохранить"
+              sx={{ width: 40, height: 40 }}
             />
             Save
           </IconButton>
@@ -125,9 +133,7 @@ function MenuBar({ sx }: MenuBarPropsType) {
               clearLocalStorage("accessToken");
               window.location.href = "/loginPage";
             }}
-            href="/"
-            component="a"
-            aria-label="Перейти на главную"
+            aria-label="Выйти"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -141,15 +147,15 @@ function MenuBar({ sx }: MenuBarPropsType) {
             <Box
               component="img"
               src={share}
-              alt="Логотип"
-              sx={{ display: "flex", flexDirection: "column" }}
+              alt="Выйти"
+              sx={{ width: 40, height: 40 }}
             />
             Log out
           </IconButton>
           <IconButton
             href="/"
             component="a"
-            aria-label="Перейти на главную"
+            aria-label="Настройки"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -163,34 +169,56 @@ function MenuBar({ sx }: MenuBarPropsType) {
             <Box
               component="img"
               src={settings}
-              alt="Логотип"
-              sx={{ display: "flex", flexDirection: "column" }}
+              alt="Настройки"
+              sx={{ width: 40, height: 40 }}
             />
             Setting
           </IconButton>
         </Box>
       </Box>
-      <Box>
-        <Avatar
-          src={NightMood}
-          alt="Логотип сайта"
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Box sx={{ transform: "rotate(90deg)", mb: 6 }}>
+          <MaterialUISwitch
+            checked={isDark}
+            onChange={(e, checked) => setIsDark(checked)}
+          />
+        </Box>
+        <EditProfileModal open={open} onClose={() => setOpen(false)} />
+        <IconButton
+          onClick={() => setOpen(true)}
           sx={{
-            width: 60,
-            height: 60,
-            mb: 8,
+            border: "none",
+            outline: "none",
+            boxShadow: "none",
+            "&:focus": {
+              outline: "none",
+              boxShadow: "none",
+            },
+            "&:hover": {
+              opacity: 0.8,
+            },
           }}
-        />
-        <Avatar
-          src={ProfilePhoto}
-          alt="Логотип сайта"
-          sx={{
-            width: 60,
-            height: 60,
-            mb: 8,
-          }}
-        />
+        >
+          <Avatar
+            src={ProfilePhoto}
+            alt="Логотип сайта"
+            sx={{
+              width: 60,
+              height: 60,
+              mb: 8,
+            }}
+          />
+        </IconButton>
       </Box>
     </Box>
   );
 }
+
 export default MenuBar;

@@ -1,3 +1,4 @@
+// App.tsx
 import "./App.css";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -12,13 +13,18 @@ import AuthForm from "./components/AuthForm/AuthForm";
 import SignUpForm from "./components/SignUpForm/SignUpForm";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
-function App() {
-  // const navigate = useNavigate();
-  // useEffect(() => {
-  //   setNavigateRef(navigate);
-  // }, [navigate]);
+import { ThemeProviderCustom, useThemeMode } from "./context/ThemeContext";
+import { ThemeProvider } from "@mui/material";
+import { darkTheme } from "./theme/darkTheme";
+import { lightTheme } from "./theme/lightTheme";
+import { useMemo } from "react";
+
+function AppContent() {
+  const { isDark } = useThemeMode();
+  const theme = useMemo(() => (isDark ? darkTheme : lightTheme), [isDark]);
+
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <Router>
         <Routes>
           <Route
@@ -38,7 +44,15 @@ function App() {
           </Route>
         </Routes>
       </Router>
-    </>
+    </ThemeProvider>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProviderCustom>
+      <AppContent />
+    </ThemeProviderCustom>
   );
 }
 

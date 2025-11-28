@@ -16,24 +16,28 @@ function CustomInput({ label, password, ...props }: CustomInputType) {
       label={label}
       sx={{
         minWidth: "505px",
+        "& .MuiInputBase-input": {
+          color: "white", // белый текст
+          fontWeight: "bold",
+        },
         "& .MuiOutlinedInput-root": {
           "& fieldset": {
-            borderColor: "#8692A6",
+            borderColor: "#7c7ccaff",
+            borderRadius: "10px",
           },
           "&:hover fieldset": {
-            borderColor: "#5473A0",
+            borderColor: "#7c7ccaff",
           },
           "&.Mui-focused fieldset": {
-            borderColor: "#8692A6",
+            borderColor: "#7c7ccaff",
           },
         },
-        "& .MuiOutlinedInput-input": {
-          color: "#8692A6",
-          backgroundColor: "transparent",
-          "&::placeholder": {
-            color: "#4CAF50", // зеленый цвет placeholder
-            opacity: 1,
-          },
+        "& .MuiInputLabel-root": {
+          color: "white", // цвет метки
+          fontWeight: "bold", // жирность
+        },
+        "& .MuiInputLabel-root.Mui-focused": {
+          color: "#7c7ccaff", // цвет метки при фокусе
         },
       }}
     />

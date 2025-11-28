@@ -6,12 +6,12 @@ export async function getChats(userId: string) {
 }
 
 export async function getChat(currentUserId: string, friendUserId: string) {
-  return await instance.post("/chat", {
+  return await instance.post("/chats", {
     currentUserId: currentUserId,
     friendUserId: friendUserId,
   });
 }
 
 export async function getChatById(chatId: string) {
-  return await instance.get(`/chat/${chatId}`);
+  return await instance.get(`/chats/chat/${chatId}`);
 }

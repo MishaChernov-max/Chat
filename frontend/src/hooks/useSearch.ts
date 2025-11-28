@@ -4,11 +4,12 @@ import { fetchSearchResults } from "../store/slices/usersSlice";
 
 export const useSearch = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { chats, isSearchLoading, isSearchError } = useSelector(
+  const { chats, isLoading, isError } = useSelector(
     (state: RootState) => state.users
   );
   const getSearch = (q: string) => {
+    console.log("Выполянется поиск со значением", q);
     dispatch(fetchSearchResults(q));
   };
-  return { chats, isSearchLoading, isSearchError, getSearch };
+  return { chats, isLoading, isError, getSearch };
 };

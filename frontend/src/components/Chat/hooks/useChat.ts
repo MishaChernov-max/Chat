@@ -17,11 +17,8 @@ export const useChat = () => {
     if (id) {
       const chatMessages = chatMessagesCache[id];
       if (!chatMessages) {
-        ///Санку evoke для того чтобы получить все сообщения чата то есть запрос к сообщениям
         dispatch(getChatMessagesByIdThunk(id));
-      }
-      ///Достать из кэша
-      else {
+      } else {
         getMessagesCache(id);
       }
     }

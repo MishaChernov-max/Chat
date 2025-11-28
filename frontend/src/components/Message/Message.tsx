@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import IconMenu from "../ContextMenu/IconMenu";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import ModalUsers from "../ModalUsers/ModalUsers";
 import ForwardMessage from "../forwardMessage/forwardMessage";
 import EditMessage from "../EditMessage/EditMessage";
@@ -38,16 +38,16 @@ export type ContextMenuType = {
   mouseX: number;
   mouseY: number;
 };
-function Message(message: MessageType) {
+const Message = forwardRef<HTMLDivElement, MessageType>((message, ref) => {
   const { _id, text, sender, createdAt, forwardedFrom, isEdited, updatedAt } =
     message;
   const dateTime = formatTime(createdAt || "");
-
   const { isLoading } = useSelector((state: RootState) => state.messageSlice);
   const { user } = useSelector((state: RootState) => state.auth);
   const [contextMenu, setContextMenu] = useState<ContextMenuType | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isEditing, SetIsEditing] = useState<boolean>(false);
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     setContextMenu({
@@ -55,6 +55,7 @@ function Message(message: MessageType) {
       mouseY: e.clientY,
     });
   };
+
   useEffect(() => {
     const handleClick = () => {
       setContextMenu(null);
@@ -65,24 +66,23 @@ function Message(message: MessageType) {
       document.removeEventListener("click", handleClick);
     };
   }, [_id]);
-  const isMyMessage = sender._id === user?._id;
-  console.log(
-    "isMyMessage",
-    isMyMessage,
-    "sender._id",
-    sender._id,
-    "userid;",
-    user?._id
-  );
-  if (!isMyMessage) {
-    return <FriendMessage message={message} />;
+
+  const isMyMessage = sender && sender._id === user?._id;
+  if (!sender) {
+    return null;
   }
+
+  if (!isMyMessage) {
+    return <FriendMessage ref={ref} message={message} />;
+  }
+
   return (
     <>
       {isEditing ? (
         <EditMessage message={message} SetIsEditing={SetIsEditing} />
       ) : (
         <Box
+          ref={ref} // ← ВОТ ТУТ РЕФ НА КОРНЕВОЙ BOX!
           onContextMenu={handleContextMenu}
           sx={{
             display: "flex",
@@ -161,5 +161,6 @@ function Message(message: MessageType) {
       )}
     </>
   );
-}
+});
+
 export default Message;

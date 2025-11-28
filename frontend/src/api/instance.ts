@@ -5,8 +5,10 @@ import {
   setLocalStorage,
 } from "../libs/localStorageApi";
 
+const baseurl = import.meta.env.VITE_API_CONFIG || "http://localhost:5000/api";
+
 const instance = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: baseurl,
   timeout: 5000,
 });
 
@@ -23,12 +25,11 @@ instance.interceptors.request.use((config) => {
 });
 
 export const refreshTokenApi = async (): Promise<{ data: string }> => {
-  // API_CONFIG.USERS_API-http://localhost:5000/api из env
-  const response = await axios.post(
-    `${"http://localhost:5000/api"}/refresh`,
+  const response = await instance.post(
+    `/refresh`,
     {},
     {
-      withCredentials: true, // Для работы с httpOnly cookies
+      withCredentials: true,
     }
   );
   return { data: response.data.token };
@@ -42,8 +43,6 @@ instance.interceptors.response.use(
       console.log("error", error);
       if (error?.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
-
-        console.log("ERROR_STATUS_401");
         const accessToken = getLocalStorage("accessToken");
         if (!accessToken) {
           window.location.href = "/loginPage";
@@ -55,8 +54,8 @@ instance.interceptors.response.use(
           originalRequest.headers.authorization = `Bearer ${newAccessToken}`;
           return instance(originalRequest);
         } else {
-          // clearLocalStorage("accessToken");
-          // window.location.href = "/loginPage";
+          clearLocalStorage("accessToken");
+          window.location.href = "/loginPage";
         }
       }
     } catch (error) {

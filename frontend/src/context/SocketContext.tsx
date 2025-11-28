@@ -85,7 +85,6 @@ export const SocketProvider = ({ children }: SocketContextProviderType) => {
   }, [user?._id]);
   useEffect(() => {
     const handleNewMessage = (message: ReceivedMessage) => {
-      console.log("Ловлю новое сообщение", message);
       updateChatMessagesCache(message);
     };
     socket?.on("new-message", handleNewMessage);

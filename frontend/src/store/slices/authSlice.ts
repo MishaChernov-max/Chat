@@ -3,7 +3,9 @@ import { createSlice } from "@reduxjs/toolkit/react";
 import {
   loginUser,
   registerUser,
+  updateGetUserInformation,
   type registerUserType,
+  type UpdatedUserInformation,
   type userType,
 } from "../../api/users";
 import { setLocalStorage } from "../../libs/localStorageApi";
@@ -13,6 +15,20 @@ export type updateUserTypeResponse = {
   surName: string | null;
   registrationCompleted: boolean;
 };
+
+export const updateGetUserInformationThunk = createAsyncThunk(
+  "auth/updateGetUserInformationThunk",
+  async (userData: UpdatedUserInformation) => {
+    try {
+      console.log("userData", userData);
+      const response = await updateGetUserInformation(userData);
+      console.log("response", response);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 
 export type authSliceType = {
   isConnected: boolean;
@@ -54,7 +70,7 @@ export const loginUserThunk = createAsyncThunk<
     setLocalStorage("accessToken", response.token);
     return response;
   } catch (error) {
-    throw error;
+    throw new Error("Логин или пароль не верный");
   }
 });
 
@@ -69,18 +85,27 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setConnection: (state, { payload: conn }) => {
-      if (conn) {
-        state.isConnected = true;
-      } else {
-        state.isConnected = false;
-      }
-    },
     clearError(state) {
       state.isError = null;
     },
   },
   extraReducers(builder) {
+    builder.addCase(updateGetUserInformationThunk.pending, (state) => {
+      state.isLoading = true;
+      state.isError = null;
+    });
+    builder.addCase(
+      updateGetUserInformationThunk.fulfilled,
+      (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.isError = null;
+      }
+    );
+    builder.addCase(updateGetUserInformationThunk.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = action.error.message ?? null;
+    });
     builder.addCase(registerUserr.pending, (state) => {
       state.isLoading = true;
       state.isError = null;

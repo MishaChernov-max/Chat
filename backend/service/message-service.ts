@@ -1,4 +1,5 @@
-import { ObjectId, SchemaType, Types } from "mongoose";
+import { Mongoose, ObjectId, Schema, SchemaType, Types } from "mongoose";
+import mongoose from "mongoose";
 import chatModel from "../models/chat-model";
 import messageModel from "../models/message-model";
 import userModels from "../models/user-models";
@@ -13,16 +14,22 @@ import { IMessageResponse } from "../messages/interfaces";
 
 class MessageService {
   USER_EXLUDED_FIELDS = "-activationCode -password";
-  async getMessages(lastId: string, limit: number, chatId: string) {
+  async getMessages(lastId: string, limit: string, chatId: string) {
+    const isLastId = lastId
+      ? {
+          _id: {
+            $lte: new mongoose.Types.ObjectId(lastId),
+          },
+        }
+      : {};
     return messageModel
       .find({
-        chatId: chatId,
-        // _id: {
-        //   $lte: lastId,
-        // },
+        chat: new mongoose.Types.ObjectId(chatId),
+        ...isLastId,
       })
+      .populate("sender")
       .sort({ _id: -1 })
-      .limit(limit);
+      .limit(parseInt(limit));
   }
   async deleteMessage(messageId: string) {
     return await messageModel.findOneAndDelete({
@@ -69,99 +76,9 @@ class MessageService {
   }
 
   async sendMessages(id: string) {
-    return await messageModel.find({ chat: id }).populate("sender");
+    return await messageModel
+      .find({ chat: new mongoose.Types.ObjectId(id) })
+      .populate("sender");
   }
-  // async getHistory(roomId: string) {
-  //   const chat = await chatModel.findOne({ roomId: roomId });
-  //   if (!chat) {
-  //     const newChat = await chatModel.create({
-  //       roomId: roomId,
-  //       messages: [],
-  //     });
-  //     return newChat;
-  //   }
-  //   return chat;
-  // }
-  // async deleMessage(roomId: string, messageId: string) {
-  //   const chat = await chatModel.findOne({ roomId });
-  //   if (chat) {
-  //     const messageIndex = chat.messages.findIndex(
-  //       (m) => m?.messageId === messageId
-  //     );
-  //     if (messageIndex > -1) {
-  //       chat.messages.splice(messageIndex, 1);
-  //     }
-  //     await chat.save();
-  //     const response = { roomId: chat.roomId, messages: chat.messages };
-  //     return response;
-  //   }
-  // }
-  // async forwardMessage(
-  //   id: string,
-  //   roomId: { currentId: string; userId: string },
-  //   forwardMessage: MessageType
-  // ) {
-  //   const { currentId, userId } = roomId;
-  //   const calculatedRoomId = [currentId, userId].sort().join("_");
-  //   const chat = await this.getHistory(calculatedRoomId);
-  //   const sender = await userModels.findOne({ _id: forwardMessage.id });
-  //   forwardMessage.id = id;
-  //   forwardMessage.forwardedFrom = sender?.firstName || "";
-  //   chat.messages.push(forwardMessage);
-  //   await chat.save();
-  //   return chat;
-  // }
-  // async editMessage(message: editMessageType) {
-  //   const { roomId, updatedMessage } = message;
-  //   const { text, messageId } = updatedMessage;
-  //   const chat = await chatModel.findOne({ roomId });
-  //   if (chat) {
-  //     const message = chat.messages.find((m) => m?.messageId === messageId);
-  //     if (message) {
-  //       message.text = text;
-  //       message.isEdited = true;
-  //       await chat.save();
-  //       return chat;
-  //     }
-  //   }
-  // }
-  // async getMessage(messagePayload: messagePayloadType) {
-  //   const { roomId, message } = messagePayload;
-  //   const chat = await chatModel.findOne({ roomId: roomId });
-  //   if (chat) {
-  //     console.log("Проваливаюсь сюда");
-  //     chat.messages.push(message);
-  //     await chat.save();
-  //     return chat;
-  //   }
-  //   console.log("chat", chat);
-  // }
-  // async getFileMessage(messagePayload: messageFilePayloadType) {
-  //   const { file, roomId, id, text, messageId } = messagePayload;
-  //   const chat = await chatModel.findOne({ roomId: roomId });
-
-  //   if (chat) {
-  //     const arrayBuffer = await file.arrayBuffer();
-  //     const buffer = Buffer.from(arrayBuffer);
-  //     const message = {
-  //       id: messageId,
-  //       text: text,
-  //       messageId: messageId,
-  //       senderId: id,
-  //       timestamp: new Date(),
-  //       attachment: {
-  //         name: file.name,
-  //         size: file.size,
-  //         type: file.type,
-  //         data: buffer,
-  //         url: `/api/files/${messageId}`,
-  //       },
-  //     };
-
-  //     chat.messages.push(message);
-  //     await chat.save();
-  //     return chat;
-  //   }
-  // }
 }
 export default new MessageService();

@@ -1,17 +1,18 @@
 import Box from "@mui/material/Box";
 import MenuBar from "../../components/MenuBar/MenuBar";
 import CommunicationPanel from "../../components/CommuniactionPanel/CommunicationPanel";
-import b from "../../assets/background.svg";
 import { Outlet } from "react-router-dom";
+import { useTheme } from "@mui/material";
 
 function HomePage() {
+  const theme = useTheme();
   return (
     <>
       <Box
         sx={{
           display: "flex",
           justifyContent: "flex-start",
-          backgroundImage: `url(${b})`,
+          backgroundImage: theme.custom.backgroundImage,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}

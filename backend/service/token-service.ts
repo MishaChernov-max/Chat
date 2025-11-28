@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import tokenModels from "../models/token-models";
 const REFRESH_SECRET =
   process.env.JWT_REFRESH_SECRET || "jwt-refresh-secret-key";
@@ -18,7 +18,7 @@ class TokenService {
       refreshToken,
     };
   }
-  async saveToken(userId: any, refreshToken: any) {
+  async saveToken(userId: string, refreshToken: string) {
     const tokenData = await tokenModels.findOne({ user: userId });
     if (tokenData) {
       tokenData.refreshToken = refreshToken;

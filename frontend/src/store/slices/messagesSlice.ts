@@ -38,10 +38,10 @@ export const getChatMessagesByIdThunk = createAsyncThunk(
       //Запрос за всеами сообщениями по chatId
       //Сохранение в кэш и замена свойства messages у стейта для того чтобы подписчик показал соообщения чата
       const response = await getChatMessages({
-        lastId: "",
         limit: 10,
         chatId,
       });
+
       return response.data;
     } catch (error) {
       throw error;

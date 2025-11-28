@@ -73,6 +73,7 @@ class UserController {
     try {
       const { email, password } = req.body;
       const user = await userService.login(email, password);
+      console.log("Не смог найти пользователя", user);
       res.cookie("refreshToken", user?.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
@@ -86,7 +87,7 @@ class UserController {
     }
   }
 
-  async activate(req: any, res: any, next: any) {
+  async activate(req: Request, res: any) {
     try {
       const activationLink = req.params.link;
       await userService.activate(activationLink);
@@ -95,13 +96,13 @@ class UserController {
       console.log(e);
     }
   }
-  async logout(req: any, res: any, next: any) {
+  async logout(req: Request, res: Response) {
     try {
     } catch (e) {}
   }
-  async getUsers(req: any, res: any) {
+  async getUsers(req: Request, res: Response) {
     try {
-      const users = await userService.getUsers();
+      const users = await userService.getUsers(req.user._id);
       return res.json({ users: users });
     } catch (e) {
       // throw e;
@@ -127,32 +128,17 @@ class UserController {
       throw e;
     }
   }
-  async setUserName(req: Request, res: Response) {
-    try {
-      const { email, name, surName } = req.body;
-      if (!email?.trim() || !name?.trim() || !surName?.trim()) {
-        return res.status(400).json({
-          success: false,
-          error: "Все поля обязательны для заполнения",
-        });
-      }
-      const updatedUser = await userService.setUserName(email, name, surName);
-      return res.json({
-        success: true,
-        updatedUser: updatedUser,
-      });
-    } catch (e) {
-      if (e instanceof Error) {
-        return res.status(500).json({
-          success: false,
-          error: e.message || "Внутренняя ошибка сервера",
-        });
-      }
-    }
-    return res.status(500).json({
-      success: false,
-      error: "Неизвестная ошибка сервера",
-    });
+  async updateUserInformation(req: Request, res: Response) {
+    const { _id, firstName, surName } = req.body.userData;
+    console.log("req.body", req.body);
+    console.log("User to update", { _id, firstName, surName });
+    const updatedUser = await userService.updateUserInformation(
+      _id,
+      firstName,
+      surName
+    );
+    console.log("updatedUser", updatedUser);
+    res.json(updatedUser);
   }
 }
 export default new UserController();

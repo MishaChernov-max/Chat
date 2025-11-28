@@ -42,9 +42,21 @@ function Chat({ chat, handleOnClick, isLink = true }: ChatTPropsType) {
           paddingLeft: "14px",
           paddingTop: "9px",
           paddingBottom: "12px",
-          bgcolor: isActive ? "#7A5AF8" : "#312F2F",
+          bgcolor: (theme) =>
+            isActive
+              ? theme.palette.mode === "dark"
+                ? "#7A5AF8"
+                : "#14532d"
+              : theme.palette.mode === "dark"
+              ? "#3b3a3aff"
+              : "#3b3a3aff",
           marginTop: "20px",
           cursor: "pointer",
+          color: (theme) =>
+            isActive
+              ? theme.palette.primary.contrastText
+              : theme.palette.text.primary,
+          transition: "background-color 0.2s",
         }}
       >
         {/* <Badge
@@ -80,15 +92,9 @@ function Chat({ chat, handleOnClick, isLink = true }: ChatTPropsType) {
             alignItems: "flex-start",
           }}
         >
-          {/* <Typography variant="h6" component="h6">
-            {isTyping ? <span>Печатает....</span> : firstName}
-          </Typography> */}
-          <Typography variant="h6" component="h6" sx={{ color: "#767876" }}>
+          <Typography variant="h6" component="h6" sx={{ color: "#FFFFFF" }}>
             {name}
           </Typography>
-          {/* <Typography variant="h6" component="h6" sx={{ color: "#767876" }}>
-            w1q
-          </Typography> */}
         </Box>
       </Box>
     </Box>

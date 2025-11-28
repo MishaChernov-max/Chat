@@ -9,7 +9,7 @@ import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import useLoginPage from "../../hooks/useLoginPage";
 import useActions from "../../hooks/useActions";
-import { CircularProgress, Divider } from "@mui/material";
+import { Alert, CircularProgress, Divider } from "@mui/material";
 import googleIcon from "../../assets/google.svg";
 export type LoginFormData = {
   email: string;
@@ -81,11 +81,7 @@ function SignUpForm() {
             </Button>
           </Box>
         </Typography>
-        {errors.root && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {errors.root.message}
-          </Typography>
-        )}
+        {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
         <Stack sx={{ alignItems: "flex-start" }}>
           <Typography variant="h4" component="h4" sx={{ marginBottom: "24px" }}>
             Login

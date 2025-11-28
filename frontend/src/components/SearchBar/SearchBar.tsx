@@ -2,12 +2,21 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import { useSearch } from "../../hooks/useSearch";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import StatusWrapper from "../StatusWrapper/StatusWrapper";
 
 function SearchBar() {
-  const { chats, isSearchLoading, isSearchError, getSearch } = useSearch();
+  const { chats, isLoading, isError, getSearch } = useSearch();
   const [value, setValue] = useState<string>("");
+  let timerRef = useRef<number>(null);
+  const handleChange = (value: string) => {
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      getSearch(value);
+    }, 1200);
+  };
   return (
     <>
       <form
@@ -18,7 +27,7 @@ function SearchBar() {
           console.log("chats-result", chats);
         }}
       >
-        <StatusWrapper isLoading={isSearchLoading} isError={isSearchError}>
+        <StatusWrapper isLoading={isLoading} isError={isError}>
           <Stack spacing={2} sx={{ width: 350 }}>
             <Autocomplete
               sx={{
@@ -37,6 +46,7 @@ function SearchBar() {
                   onClick={(e) => e.stopPropagation()}
                   onChange={(e) => {
                     setValue(e.target.value);
+                    handleChange(e.target.value);
                   }}
                   sx={{
                     color: "white", //  цвет текста

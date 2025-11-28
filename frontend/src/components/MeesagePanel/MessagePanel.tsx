@@ -9,9 +9,7 @@ import { useChat } from "../Chat/hooks/useChat";
 function MessagePanel() {
   useChat();
   const messages = useChatMessages();
-  const { chatLoading, chatError } = useSelector(
-    (state: RootState) => state.chats
-  );
+  const { isLoading, isError } = useSelector((state: RootState) => state.chats);
   return (
     <>
       <Box
@@ -29,14 +27,14 @@ function MessagePanel() {
           },
         }}
       >
-        {chatError && (
+        {isError && (
           <Snackbar
             content="Возникла ошибка при загрузке чата"
             color="error"
             autoHideDuration={2000}
           />
         )}
-        {chatLoading ? (
+        {isLoading ? (
           <CircularProgress />
         ) : (
           <Messages messages={messages || []} />

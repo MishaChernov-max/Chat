@@ -1,5 +1,8 @@
 import { Avatar, Box, Typography } from "@mui/material";
 import type { userType } from "../../api/users";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store";
+import { currentUser } from "../../store/slices/usersSlice";
 
 export type UserTPropsType = {
   user: userType;
@@ -7,6 +10,7 @@ export type UserTPropsType = {
 };
 
 function User({ user, handleOnClick }: UserTPropsType) {
+  const activeUser = currentUser();
   const { _id, firstName, surName, avatar } = user;
   console.log();
   const name = `${firstName} ${surName}`;
@@ -31,9 +35,21 @@ function User({ user, handleOnClick }: UserTPropsType) {
           paddingLeft: "14px",
           paddingTop: "9px",
           paddingBottom: "12px",
-          bgcolor: "#312F2F",
+          bgcolor: (theme) =>
+            activeUser === _id
+              ? theme.palette.mode === "dark"
+                ? "#7A5AF8"
+                : "#14532d"
+              : theme.palette.mode === "dark"
+              ? "#3b3a3aff"
+              : "#3b3a3aff",
           marginTop: "20px",
           cursor: "pointer",
+          color: (theme) =>
+            activeUser === _id
+              ? theme.palette.primary.contrastText
+              : theme.palette.text.primary,
+          transition: "background-color 0.2s",
         }}
       >
         {/* <Badge
@@ -72,7 +88,7 @@ function User({ user, handleOnClick }: UserTPropsType) {
           {/* <Typography variant="h6" component="h6">
             {isTyping ? <span>Печатает....</span> : firstName}
           </Typography> */}
-          <Typography variant="h6" component="h6" sx={{ color: "#767876" }}>
+          <Typography variant="h6" component="h6" sx={{ color: "#FFFFFF" }}>
             {name}
           </Typography>
           {/* <Typography variant="h6" component="h6" sx={{ color: "#767876" }}>

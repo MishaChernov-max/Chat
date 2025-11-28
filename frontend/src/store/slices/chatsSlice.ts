@@ -11,30 +11,24 @@ export type ChatType = {
   participants: userType[];
   createdAt: Date;
   updatedAt: Date;
-  messages: MessageType[]; //Отдельная сущность
-  name: string; //
+  messages: MessageType[];
+  name: string;
   avatar?: string;
 };
-//1)Убрать преписку Chats для loading,error.
-// 2)Убрать loading,error для chat
 
 export type chatsSliceType = {
-  chatsLoading: boolean;
-  chatsError: string | null;
+  isLoading: boolean;
+  isError: string | null;
   chats: ChatType[];
   chatCache: ChatType[];
-  chatLoading: boolean;
-  chatError: string | null;
   activeChat: ChatType | null;
 };
 
 const initialState: chatsSliceType = {
-  chatsLoading: false,
-  chatsError: null,
+  isLoading: false,
+  isError: null,
   chats: [],
   chatCache: [],
-  chatLoading: false,
-  chatError: null,
   activeChat: null,
 };
 
@@ -86,30 +80,30 @@ const chatSlice = createSlice({
   },
   extraReducers(builder) {
     builder.addCase(loadUserChats.pending, (state) => {
-      state.chatsLoading = true;
-      state.chatsError = null;
+      state.isLoading = true;
+      state.isError = null;
     });
     builder.addCase(loadUserChats.fulfilled, (state, action) => {
-      state.chatsLoading = false;
+      state.isLoading = false;
       state.chats = action.payload;
-      state.chatsError = null;
+      state.isError = null;
     });
     builder.addCase(loadUserChats.rejected, (state, action) => {
-      state.chatsLoading = false;
-      state.chatsError = action.error.message ?? null;
+      state.isLoading = false;
+      state.isError = action.error.message ?? null;
     });
     builder.addCase(getChatByIdThunk.pending, (state) => {
-      state.chatLoading = true;
-      state.chatError = null;
+      state.isLoading = true;
+      state.isError = null;
     });
     builder.addCase(getChatByIdThunk.fulfilled, (state, action) => {
-      state.chatLoading = false;
+      state.isLoading = false;
       state.activeChat = action.payload;
-      state.chatError = null;
+      state.isError = null;
     });
     builder.addCase(getChatByIdThunk.rejected, (state, action) => {
-      state.chatLoading = false;
-      state.chatError = action.error.message ?? null;
+      state.isLoading = false;
+      state.isError = action.error.message ?? null;
     });
   },
 });

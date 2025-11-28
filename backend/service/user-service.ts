@@ -4,6 +4,7 @@ import userModels from "../models/user-models";
 import bcrypt from "bcryptjs";
 import tokenService from "./token-service";
 import mailService, { sendWithEthereal } from "./mail-service";
+import mongoose from "mongoose";
 
 class UserService {
   async registration(
@@ -50,9 +51,13 @@ class UserService {
     user.isActivated = true;
     await user.save();
   }
-  async getUsers() {
-    return await userModels.find({}, { activationLink: 0, password: 0 });
+  async getUsers(currentUserId: string) {
+    return await userModels.find(
+      { _id: { $ne: currentUserId } },
+      { activationLink: 0, password: 0 }
+    );
   }
+
   async getUser(_id: string) {
     return await userModels.findOne(
       { _id },
@@ -63,7 +68,10 @@ class UserService {
     try {
       return await userModels.find(
         {
-          email: { $regex: `^${req}`, $options: "i" },
+          $or: [
+            { firstName: { $regex: `^${req}`, $options: "i" } },
+            { surName: { $regex: `^${req}`, $options: "i" } },
+          ],
         },
         { activationLink: 0, password: 0 }
       );
@@ -74,6 +82,7 @@ class UserService {
   async login(email: string, password: string) {
     try {
       const user = await userModels.findOne({ email });
+      console.log("user", user);
       if (!user) {
         throw new Error(`Аккаунт не найден`);
       }
@@ -87,34 +96,20 @@ class UserService {
         throw new Error(`Неверный пароль`);
       }
     } catch (e) {
+      console.log(e);
       throw e;
     }
   }
-  async setUserName(email: string, name: string, surName: string) {
-    try {
-      const updatedUser = await userModels.findOneAndUpdate(
-        { email },
-        {
-          name,
-          surName,
-          registrationCompleted: false,
-        },
-        {
-          new: true,
-          projection: {
-            name: 1,
-            surName: 1,
-            registrationCompleted: 1,
-          },
-        }
-      );
-      if (!updatedUser) {
-        throw new Error(`Аккаунт не найден`);
-      }
-      return updatedUser;
-    } catch (e) {
-      throw e;
-    }
+  async updateUserInformation(_id: string, firstName: string, surName: string) {
+    const user = await userModels
+      .findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(_id) },
+        { $set: { firstName, surName } },
+        { new: true }
+      )
+      .select({ email: 1, firstName: 1, surName: 1 })
+      .lean();
+    return user;
   }
 }
 export default new UserService();

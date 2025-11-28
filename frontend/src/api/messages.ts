@@ -1,7 +1,7 @@
 import instance from "./instance";
 
 export type ParamsRequest = {
-  lastId: string;
+  lastId?: string;
   limit: number;
   chatId: string;
 };
