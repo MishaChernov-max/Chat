@@ -6,9 +6,6 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { grey } from "@mui/material/colors";
 import { useState } from "react";
 import GroupModals from "../GroupModals/GroupModals";
-import Groups from "../Groups/Groups";
-import useGroups from "../../hooks/useGroups";
-import StatusWrapper from "../StatusWrapper/StatusWrapper";
 
 function GroupList() {
   const color = grey[50];
@@ -16,7 +13,6 @@ function GroupList() {
   const handleAddGroupClick = () => {
     setShowModal(true);
   };
-  const { isGroupsLoading, isGroupsError, groups } = useGroups();
   return (
     <>
       {showModal && (
@@ -49,10 +45,6 @@ function GroupList() {
             </Typography>
           </Stack>
         </Stack>
-        <StatusWrapper isError={isGroupsError} isLoading={isGroupsLoading}>
-          {!groups?.length && <span>Групп нет....</span>}
-          <Groups groups={groups} />
-        </StatusWrapper>
       </Box>
     </>
   );

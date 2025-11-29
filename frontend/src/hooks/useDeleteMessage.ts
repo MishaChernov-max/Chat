@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import { useSocket } from "../context/SocketContext";
 import type { RootState } from "../store";
-import useActions from "./useActions";
 import { useParams } from "react-router-dom";
 
 const useDeleteMessage = (messageId: string) => {

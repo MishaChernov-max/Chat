@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
-import { useTypingForRoom } from "../../hooks/useTypingForRoom";
 import type { ChatType } from "../../store/slices/chatsSlice";
 import { Avatar } from "@mui/material";
 import { useRoomId } from "../../store/slices/messagesSlice";
@@ -18,7 +17,6 @@ function Chat({ chat, handleOnClick, isLink = true }: ChatTPropsType) {
   const roomId = useRoomId();
   const { _id, name, avatar } = chat;
   const isActive = roomId === _id;
-  useTypingForRoom(_id);
   const content = (
     <Box
       onClick={() => {

@@ -5,7 +5,6 @@ import type {
 } from "../components/Message/Message";
 import { useSocket } from "../context/SocketContext";
 import type { RootState } from "../store";
-import useActions from "./useActions";
 import { useParams } from "react-router-dom";
 
 export type messagePayloadType = {
