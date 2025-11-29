@@ -92,7 +92,7 @@ utils/ — утилиты (formatTime, escapeHtml и др.)
 
 Переменные окружения
 Backend (.env в корне сервера)
-Создай файл .env рядом с backend-проектом (у тебя уже есть):
+Создай файл .env рядом с backend-проектом 
 
 DB_URL=mongodb+srv://root:12345@cluster0.yop9qjf.mongodb.net/chat_db?retryWrites=true&w=majority
 PORT=5000
@@ -184,7 +184,6 @@ http://localhost:5173
 Фронт будет ходить на API по адресу из VITE_API_CONFIG: http://localhost:5000/api.
 
 Основные эндпоинты API
-Ниже перечислены роуты с учётом того, что в сервере используется:
 
 app.use("/api", router)
 
