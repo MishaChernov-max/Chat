@@ -64,6 +64,7 @@ const chatSlice = createSlice({
       if (state.chats.length === 5) {
         state.chatCache = state.chatCache.slice(1);
       }
+      state.chats = [...state.chats, chat];
       state.chatCache = [...state.chatCache, chat];
     },
     replaceChat: (state, { payload: chat }) => {

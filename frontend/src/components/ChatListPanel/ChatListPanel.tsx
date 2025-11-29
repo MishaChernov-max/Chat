@@ -21,7 +21,7 @@ export type ActiveTab = "chats" | "groups" | "users";
 function ChatListPanel({ sx, showFilterTabs, isLink }: ChatListPanelType) {
   const [filterTabs, setFilterTabs] = useState<ActiveTab>("chats");
 
-  const { chatsLoading, chatsError, chats } = useFetchChats();
+  const { isLoading, isError, chats } = useFetchChats();
 
   return (
     <>
@@ -55,11 +55,10 @@ function ChatListPanel({ sx, showFilterTabs, isLink }: ChatListPanelType) {
           />
         )}
 
-        {/* Отдельный компонент для условного рендеринга */}
         {filterTabs === "users" ? (
           <UserList handleOnClick={useUserClick} />
         ) : filterTabs === "chats" ? (
-          <StatusWrapper isError={chatsError} isLoading={chatsLoading}>
+          <StatusWrapper isError={isError} isLoading={isLoading}>
             {chats.length > 0 ? (
               <Chats chats={chats} isLink={isLink} />
             ) : (

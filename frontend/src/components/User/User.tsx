@@ -1,7 +1,5 @@
 import { Avatar, Box, Typography } from "@mui/material";
 import type { userType } from "../../api/users";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store";
 import { currentUser } from "../../store/slices/usersSlice";
 
 export type UserTPropsType = {
@@ -52,27 +50,6 @@ function User({ user, handleOnClick }: UserTPropsType) {
           transition: "background-color 0.2s",
         }}
       >
-        {/* <Badge
-          badgeContent={}
-          color="info"
-          overlap="circular"
-          sx={{
-            "& .MuiBadge-badge": {
-              fontSize: "12px",
-              height: "20px",
-              minWidth: "20px",
-              transform: "translate(-50px)",
-            },
-          }}
-        >
-          <Avatar
-            src={avatar}
-            alt="Фото Профиля"
-            sx={{ width: "80px", height: "80px" }}
-          />
-          2131
-        </Badge> */}
-
         <Avatar
           src={avatar}
           alt="Фото Профиля"
@@ -85,15 +62,9 @@ function User({ user, handleOnClick }: UserTPropsType) {
             alignItems: "flex-start",
           }}
         >
-          {/* <Typography variant="h6" component="h6">
-            {isTyping ? <span>Печатает....</span> : firstName}
-          </Typography> */}
           <Typography variant="h6" component="h6" sx={{ color: "#FFFFFF" }}>
             {name}
           </Typography>
-          {/* <Typography variant="h6" component="h6" sx={{ color: "#767876" }}>
-            w1q
-          </Typography> */}
         </Box>
       </Box>
     </Box>

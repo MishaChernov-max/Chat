@@ -1,11 +1,9 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
-import type { RootState } from "../../store";
-import { useSelector } from "react-redux";
 import { useTypingForRoom } from "../../hooks/useTypingForRoom";
 import type { ChatType } from "../../store/slices/chatsSlice";
-import { Avatar, Badge } from "@mui/material";
+import { Avatar } from "@mui/material";
 import { useRoomId } from "../../store/slices/messagesSlice";
 
 export type ChatTPropsType = {
@@ -18,12 +16,9 @@ function Chat({ chat, handleOnClick, isLink = true }: ChatTPropsType) {
     ? handleOnClick()
     : { handleClick: () => {} };
   const roomId = useRoomId();
-  const { typingUsers } = useSelector((state: RootState) => state.users);
   const { _id, name, avatar } = chat;
   const isActive = roomId === _id;
   useTypingForRoom(_id);
-  const isTyping = typingUsers.includes(_id);
-
   const content = (
     <Box
       onClick={() => {
@@ -59,27 +54,6 @@ function Chat({ chat, handleOnClick, isLink = true }: ChatTPropsType) {
           transition: "background-color 0.2s",
         }}
       >
-        {/* <Badge
-          badgeContent={}
-          color="info"
-          overlap="circular"
-          sx={{
-            "& .MuiBadge-badge": {
-              fontSize: "12px",
-              height: "20px",
-              minWidth: "20px",
-              transform: "translate(-50px)",
-            },
-          }}
-        >
-          <Avatar
-            src={avatar}
-            alt="Фото Профиля"
-            sx={{ width: "80px", height: "80px" }}
-          />
-          2131
-        </Badge> */}
-
         <Avatar
           src={avatar}
           alt="Фото Профиля"

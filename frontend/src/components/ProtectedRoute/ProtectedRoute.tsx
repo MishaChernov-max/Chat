@@ -8,7 +8,6 @@ export type ProtectedRouteType = {
 
 function ProtectedRoute({ children }: ProtectedRouteType) {
   const token = getLocalStorage("accessToken");
-  console.log("token", token);
   if (!token) {
     return <Navigate to={"/loginPage"} replace />;
   }

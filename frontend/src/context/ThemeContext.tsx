@@ -1,5 +1,10 @@
-// ThemeContext.tsx
-import React, { createContext, useContext, useState, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
 
 type ThemeContextType = {
   isDark: boolean;
@@ -12,6 +17,19 @@ export const ThemeProviderCustom: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("theme");
+      if (saved === "dark") setIsDark(true);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    } catch {}
+  }, [isDark]);
 
   const value = useMemo(() => ({ isDark, setIsDark }), [isDark]);
 

@@ -1,7 +1,6 @@
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import logo from "../../assets/logo.svg";
-import ProfilePhoto from "../../assets/ProfilePhoto.svg";
 import home from "../../assets/home.svg";
 import search from "../../assets/search.svg";
 import save from "../../assets/save.svg";
@@ -11,9 +10,11 @@ import IconButton from "@mui/material/IconButton";
 import { useState } from "react";
 import EditProfileModal from "../EditProfileModal/EditProfileModal";
 import MaterialUISwitch from "../MaterialUISwitch/MaterialUISwitch";
-import { useThemeMode } from "../../context/ThemeContext"; // <-- твой useThemeMode хук из контекста!
+import { useThemeMode } from "../../context/ThemeContext";
 import { clearLocalStorage } from "../../libs/localStorageApi";
 import type { SxProps } from "@mui/material";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store";
 
 type MenuBarPropsType = {
   sx?: SxProps;
@@ -21,6 +22,10 @@ type MenuBarPropsType = {
 
 function MenuBar({ sx }: MenuBarPropsType) {
   const [open, setOpen] = useState<boolean>(false);
+
+  const profilePhoto = useSelector(
+    (state: RootState) => state.auth.user?.avatar
+  );
 
   const { isDark, setIsDark } = useThemeMode();
 
@@ -207,7 +212,7 @@ function MenuBar({ sx }: MenuBarPropsType) {
           }}
         >
           <Avatar
-            src={ProfilePhoto}
+            src={profilePhoto}
             alt="Логотип сайта"
             sx={{
               width: 60,

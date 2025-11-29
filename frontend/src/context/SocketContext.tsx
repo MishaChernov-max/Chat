@@ -35,12 +35,13 @@ type NotificationData = {
 
 export const SocketContext = createContext<Socket | null>(null);
 
+// const serverPort = VITE_SERVER_PORT.env ||
+
 export const SocketProvider = ({ children }: SocketContextProviderType) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [open, setOpen] = useState<boolean>(false);
-  const [currentNotification, setCurrentNotification] =
-    useState<NotificationData | null>();
+  const [currentNotification] = useState<NotificationData | null>();
   const {
     getOnlineUsers,
     getDisconnectUser,
@@ -50,10 +51,13 @@ export const SocketProvider = ({ children }: SocketContextProviderType) => {
 
   const { activeChat: chat } = useSelector((state: RootState) => state.chats);
 
+  const token = getLocalStorage("accessToken");
+
+  const serverPort =
+    import.meta.env.VITE_SERVER_PORT || "http://localhost:5000";
   useEffect(() => {
-    const token = getLocalStorage("accessToken");
     if (!user?._id || !token) return;
-    const newSocket = io("http://localhost:5000", {
+    const newSocket = io(serverPort, {
       auth: {
         userId: user?._id,
         token: token,
@@ -82,16 +86,13 @@ export const SocketProvider = ({ children }: SocketContextProviderType) => {
     return () => {
       newSocket.disconnect();
     };
-  }, [user?._id]);
+  }, [user?._id, token]);
   useEffect(() => {
     const handleNewMessage = (message: ReceivedMessage) => {
       updateChatMessagesCache(message);
     };
     socket?.on("new-message", handleNewMessage);
     return () => {
-      // socket?.off("notification", handleNotification);
-      // socket?.off("unread_update", handleUnreadUpdate);
-
       socket?.off("new-message", handleNewMessage);
     };
   }, [socket, chat?._id]);
