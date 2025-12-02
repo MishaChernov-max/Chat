@@ -1,4 +1,18 @@
 Chat App
+Запуск продакшн-сборки фронтенда
+
+Собрать проект:
+
+npm run build
+
+Запустить preview-сервер (использует собранную папку dist):
+
+npm run preview
+
+Открыть в браузере:
+
+http://localhost:4173﻿
+
 Фуллстек чат:
 
 Backend: Node.js + Express + MongoDB (Mongoose), JWT, Socket.IO
