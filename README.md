@@ -1,328 +1,199 @@
-Chat App
-Запуск продакшн-сборки фронтенда
 
-Собрать проект:
+# Chat App – Продакшн сборка и структура
 
-npm run build
+## Запуск продакшн сборки фронтенда
 
-Запустить preview-сервер (использует собранную папку dist):
+1.  Собрать проект:
+    
 
-npm run preview
+`npm run build` 
 
-Открыть в браузере:
+2.  Запустить preview-сервер, который использует собранную папку  `dist`:
+    
+`npm run preview` 
 
-http://localhost:4173﻿
+3.  Открыть в браузере:
+   
 
-Фуллстек чат:
+`http://localhost:4173` 
 
-Backend: Node.js + Express + MongoDB (Mongoose), JWT, Socket.IO
+----------
+## Технологии и структура проекта
 
-Frontend: React + Vite + TypeScript + Redux Toolkit
+## Backend
 
-Взаимодействие по REST + WebSocket
+-   Node.js + Express + MongoDB (Mongoose)
+    
+-   JWT для аутентификации
+    
+-   Socket.IO для WebSocket соединения
+    
+-   Точка входа: файл  `src/index.ts`  или  `server.ts`
+    
+-   Роутеры в папке  `router/`  для чатов, сообщений, пользователей, аутентификации
+    
+-   Контроллеры в  `controllers/`
+    
+-   Middleware для доступа и проверки токенов в  `middleware/`
+    
+-   Работа с JWT в сервисе  `service/token-service.ts`
+    
+-   MongoDB подключение через  `mongoose.connect(DB_URL)`
+    
 
-Монорепа: backend и frontend в одном репозитории
+## Frontend
 
-Требования
-Node.js (рекомендуется LTS 18+)
+-   React + Vite + TypeScript + Redux Toolkit
+    
+-   Папки и файлы:
+    
+    -   `src/api/`  — axios-инстанс и API-функции (chats.ts, messages.ts и др.)
+        
+    -   `src/components/`  — UI-компоненты (чат, сообщения, формы)
+        
+    -   `src/pages/`  — страницы (Home, Login)
+        
+    -   `src/store/`  — Redux Toolkit слайсы (authSlice, chatsSlice и пр.)
+        
+    -   `src/context/`  — React контексты (ThemeContext, SocketContext)
+        
+    -   `src/hooks/`  — кастомные React хуки (useFetchChats, useSendMessage и др.)
+        
+    -   `src/theme/`  — темы (светлая/темная)
+        
+    -   `src/utils/`  — утилиты (формат времени и др.)
+        
 
-npm
+----------
 
-MongoDB (локально или в облаке)
+## Переменные окружения (.env)
 
-Рекомендуется установить VS Code и расширения для:
+## Backend (.env рядом с backend)
 
-ESLint / Prettier
+text
 
-TypeScript
+`DB_URL=mongodb+srv://root:12345@cluster0.yop9qjf.mongodb.net/chat_db?retryWrites=true&w=majority PORT=5000 FRONTENDPORT=http://localhost:5173` 
 
-React
+-   `DB_URL`  — строка подключения к MongoDB (локально или Atlas)
+    
+-   `PORT`  — порт backend сервера ([http://localhost:5000](http://localhost:5000/))
+    
+-   `FRONTENDPORT`  — адрес фронтенда для CORS (например,  [http://localhost:5173](http://localhost:5173/))
+    
 
-Структура проекта:
+В backend CORS должен использовать эту переменную, пример:
 
-Backend (сервер):
+ts
 
-точка входа сервера: файл с Express и Socket.IO (например, src/index.ts или server.ts)
+`origin: process.env.FRONTENDPORT  ||  "http://localhost:5173"` 
 
-роутеры:
+----------
 
-router/router.ts — главный роутер /api
+## Frontend (.env в корне Vite проекта)
 
-router/chatRouter.ts — роуты для чатов
+text
 
-router/messageRouter.ts — роуты для сообщений
+`VITE_API_CONFIG=http://localhost:5000/api` 
 
-router/userRouter.ts — роуты для пользователей
+-   Для axios базовый URL берётся из  `import.meta.env.VITE_API_CONFIG`
+    
 
-router/authRouter.ts — аутентификация
+Пример axios-instance:
 
-контроллеры:
+`baseURL:  import.meta.env.VITE_API_CONFIG` 
 
-controllers/chat-controller.ts
+----------
 
-controllers/message-controller.ts
+## Команды для запуска проекта
 
-controllers/user-controller.ts
+1.  Установить зависимости
+    
 
-middleware:
+Backend:
 
-middleware/auth.ts — accessTokenMiddleware
 
-сервисы:
 
-service/token-service.ts — работа с JWT
-
-модели (Mongoose-схемы) для пользователей, чатов, сообщений
-
-подключение к MongoDB через mongoose.connect(DB_URL)
-
-Frontend (клиент):
-
-Vite React TypeScript проект
-
-src/
-
-api/
-
-instance.ts — axios-инстанс с baseURL = VITE_API_CONFIG
-
-chats.ts, messages.ts, users.ts, groups.ts — функции для запросов к API
-
-components/ — все UI-компоненты (Chat, Messages, Groups, AuthForm и т.д.)
-
-pages/ — страницы (HomePage, LoginPage)
-
-store/ — Redux Toolkit:
-
-slices: authSlice, chatsSlice, messagesSlice, usersSlice, groupSlice
-
-context/ — контексты (ThemeContext, SocketContext)
-
-hooks/ — кастомные хуки (useFetchChats, useSendMessage, useLoginPage и др.)
-
-theme/ — lightTheme/darkTheme
-
-utils/ — утилиты (formatTime, escapeHtml и др.)
-
-Переменные окружения
-Backend (.env в корне сервера)
-Создай файл .env рядом с backend-проектом 
-
-DB_URL=mongodb+srv://root:12345@cluster0.yop9qjf.mongodb.net/chat_db?retryWrites=true&w=majority
-PORT=5000
-FRONTENDPORT=http://localhost:5173
-
-Назначение:
-
-DB_URL — строка подключения к MongoDB (Atlas)
-
-PORT — порт, на котором стартует backend (http://localhost:5000)
-
-FRONTENDPORT — адрес фронтенда для CORS
-
-В сервере CORS должен использовать FRONTENDPORT, например:
-
-origin: process.env.FRONTENDPORT || "http://localhost:5173"
-
-API монтируется как:
-
-app.use("/api", router)
-
-Frontend (.env на клиенте)
-В Vite-проекте создай .env:
-
-VITE_API_CONFIG=http://localhost:5000/api
-
-Назначение:
-
-VITE_API_CONFIG — базовый URL для axios-инстанса на фронте.
-
-Пример в instance.ts:
-
-baseURL: import.meta.env.VITE_API_CONFIG
-
-Запуск проекта
-
-1. Установить зависимости
-   Backend:
-
-cd в папку сервера (там, где package.json бекенда)
-
-npm install
+`cd backend npm  install` 
 
 Frontend:
 
-cd в папку клиента (Vite-проект)
 
-npm install
 
-Если у тебя монорепа с двумя package.json, запускай команды в каждой части отдельно.
+`cd frontend npm  install` 
 
-2. Настроить .env
-   Backend:
+2.  Настроить .env файлы в каждом проекте (backend и frontend).
+    
+3.  Запуск backend:
+    
 
-Создай .env и заполни:
+`cd backend npm run dev` 
 
-DB_URL=...
+API будет работать на:  [http://localhost:5000/api](http://localhost:5000/api)
 
-PORT=5000
+4.  Запуск frontend во время разработки:
+    
 
-FRONTENDPORT=http://localhost:5173
 
-Frontend:
+`cd frontend npm run dev` 
 
-В папке клиента создай .env:
+Vite будет работать на:  [http://localhost:5173](http://localhost:5173/)
 
-VITE_API_CONFIG=http://localhost:5000/api
+5.  Запуск продакшн сборки фронтенда:
+    
 
-3. Запуск backend
-   В папке сервера:
 
-npm run dev
 
-Сервер поднимется на:
+`cd frontend npm run build npm run preview` 
 
-http://localhost:5000
+Открыть  [http://localhost:4173](http://localhost:4173/)  для просмотра продакшн-варианта.
 
-API будет доступно по префиксу /api (например, http://localhost:5000/api/auth/login)
+----------
 
-4. Запуск frontend
-   В папке клиента:
+## Взаимодействие и WebSocket
 
-npm run dev
+-   Backend создает сервер через  `createServer(app)`
+    
+-   Инициализация Socket.IO с CORS для фронтенда
+    
+-   Сервер проверяет токены клиентов через middleware в Socket.IO
+    
+-   Клиенты подключаются и находятся в комнатах по userId
+    
+-   Рассылаются события  `new-user-online`,  `new-message`  и другие
+    
+-   Frontend подключается через SocketContext к Socket.IO, слушая события
+    
 
-По умолчанию Vite запустится на:
+----------
 
-http://localhost:5173
+## Основные API Endpoints (префикс /api)
 
-Фронт будет ходить на API по адресу из VITE_API_CONFIG: http://localhost:5000/api.
+Роутер
 
-Основные эндпоинты API
+Действие
 
-app.use("/api", router)
+Пример URL
 
-В router/router.ts:
+/auth
 
-router.use("/chats", chatRouter)
-
-router.use("/messages", messageRouter)
-
-router.use("/users", userRouter)
-
-router.use("/auth", authRouter)​
-
-Аутентификация (/api/auth)
-POST /api/auth/registration
-
-Регистрация пользователя
+Регистрация, логин, refresh
 
 POST /api/auth/login
 
-Логин, выдаёт access/refresh токены
+/chats
 
-POST /api/auth/refresh
-
-Обновление access токена по refresh токену
-
-Чаты (/api/chats)
-chatRouter:
-
-POST /api/chats
-
-Создать или получить чат по паре пользователей
-
-Тело запроса: { currentUserId, friendUserId }
-
-GET /api/chats/chat/:id
-
-Получить конкретный чат по id
+Создать/получить чат
 
 GET /api/chats/:userId
 
-Получить список чатов для пользователя userId
+/messages
 
-Сообщения (/api/messages)
-messageRouter:
+Получить список сообщений
 
 GET /api/messages
 
-Получить сообщения (либо все, либо с параметрами — зависит от контроллера)
+/users
 
-Пользователи (/api/users)
-userRouter (все роуты под accessTokenMiddleware):
-
-PATCH /api/users/me
-
-Обновить информацию о текущем пользователе
+Получить/обновить пользователя
 
 GET /api/users
-
-Получить список пользователей
-
-GET /api/users/user/:id
-
-Получить пользователя по id
-
-GET /api/users/search
-
-Поиск пользователей по строке (query-параметры)
-
-Frontend и взаимодействие с API
-
-Фронт использует axios-инстанс:
-
-baseURL: import.meta.env.VITE_API_CONFIG (http://localhost:5000/api)
-
-Примеры функций:
-
-getChats(userId)
-
-GET /chats/:userId → /api/chats/:userId
-
-getChat(currentUserId, friendUserId)
-
-POST /chats → /api/chats
-
-getChatById(chatId)
-
-GET /chats/chat/:chatId → /api/chats/chat/:chatId
-
-Компоненты используют хуки (useFetchChats, useSendMessage и др.), которые дергают эти функции и кладут данные в Redux слайсы (chatsSlice, messagesSlice и т.п.).
-
-WebSocket (Socket.IO)
-Сервер:
-
-создаёт HTTP сервер через createServer(app)
-
-инициализирует Socket.IO:
-
-const io = new Server(server, { cors: { origin: "\*", methods: ["GET", "POST"] } })
-
-Подключение пользователя:
-
-проверка токена в io.use(...)
-
-socket.join(userId)
-
-рассылка событий:
-
-"new-user-online"
-
-"get-users-online"
-
-"disconnect-user"
-
-"new-message" при отправке сообщения
-
-Фронт:
-
-создаёт подключение к Socket.IO и использует SocketContext
-
-слушает события новых сообщений, статусов, typing и т.п.
-
-Полезные примечания
-CORS:
-
-на бэке используй origin: process.env.FRONTENDPORT, чтобы совпадало с фронтом
-
-Все URL на фронте должны быть относительными к VITE_API_CONFIG ("/auth/login", "/chats", "/users" и т.п.)
