@@ -1,21 +1,7 @@
 import { Request, Response } from "express";
-import { Server } from "socket.io";
 import messageService from "../service/message-service";
-import {
-  ChatType,
-  editMessageType,
-  messagePayloadType,
-  MessageType,
-} from "../types";
-import groupModel from "../models/group-model";
-import userModels from "../models/user-models";
-import userChatCounterModel from "../models/user-chat-counter-model";
-import chatModel from "../models/chat-model";
-import chatService from "../service/chat-service";
-import { IMessage, IMessageResponse } from "../messages/interfaces";
-import { Schema, Types } from "mongoose";
-import { IUser } from "../users/interfaces";
-import { IChatResponse } from "../chats/interfaces";
+import { MessageType } from "../types";
+import { IMessage } from "../messages/interfaces";
 
 interface ForwardedMessage {
   roomId: { currentId: string; userId: string };

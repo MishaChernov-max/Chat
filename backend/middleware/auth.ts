@@ -18,17 +18,24 @@ export const accessTokenMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(" ")[1];
-  console.log("token", token);
-  if (!token) {
-    return res.status(401).json({ error: "Неверный токен" });
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(" ")[1];
+    console.log("token", token);
+    if (!token) {
+      return res.status(401).json({ error: "Неверный токен" });
+    }
+    const payload = await tokenService.verifyAccessToken(token as string);
+    if (!payload) {
+      return res.status(401).json({ error: "Неверный токен" });
+    }
+    console.log("payload", payload);
+    req.user = payload as TokenPayload;
+    next();
+  } catch (error: any) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Токен истёк" });
+    }
+    return res.status(403).json({ error: "Недействительный токен" });
   }
-  const payload = await tokenService.verifyAccessToken(token as string);
-  if (!payload) {
-    return res.status(401).json({ error: "Неверный токен" });
-  }
-  console.log("payload", payload);
-  req.user = payload as TokenPayload;
-  next();
 };

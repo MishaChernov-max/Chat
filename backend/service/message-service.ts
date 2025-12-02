@@ -65,8 +65,6 @@ class MessageService {
       .populate("chat")
       .lean();
 
-    console.log("chat", chat);
-
     await chatModel.findOneAndUpdate(
       { _id: chat },
       { $push: { messages: message._id } },

@@ -18,6 +18,7 @@ class UserController {
   async refresh(req: Request, res: Response) {
     try {
       const refreshToken = req.cookies.refreshToken;
+      console.log("Попал сюда нужно обновить токен", refreshToken);
       if (!refreshToken) {
         return res.status(401).json("Ошибка авторизации");
       }
@@ -36,6 +37,7 @@ class UserController {
           expiresIn: "15m",
         }
       );
+      console.log("Сгенерировал новый токен");
       res.json({ token: newAccessToken });
     } catch (error) {
       res.clearCookie("refreshToken");
@@ -73,10 +75,12 @@ class UserController {
     try {
       const { email, password } = req.body;
       const user = await userService.login(email, password);
-      console.log("Не смог найти пользователя", user);
+      console.log("refreshToken");
       res.cookie("refreshToken", user?.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        secure: false,
+        sameSite: "lax",
       });
       return res.json({
         user: user.userDto,

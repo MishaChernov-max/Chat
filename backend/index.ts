@@ -1,4 +1,4 @@
-import express, { NextFunction } from "express";
+import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import dotenv from "dotenv";
@@ -8,14 +8,18 @@ import messageController from "./controllers/message-controller";
 import { onlineUsers } from "./users";
 import tokenService from "./service/token-service";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
 
 const FRONTEND_URL = process.env.FRONTENDPORT || "http://localhost:5173";
 
+const FRONTEND_URL_PREVIEW =
+  process.env.FRONTENDPORT_PREVIEW || "http://localhost:4173";
+
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: [FRONTEND_URL, FRONTEND_URL_PREVIEW],
     credentials: true,
   })
 );
@@ -33,7 +37,7 @@ const io = new Server(server, {
 
 const DB_URL =
   "mongodb+srv://root:12345@cluster0.yop9qjf.mongodb.net/chat_db?retryWrites=true&w=majority";
-
+app.use(cookieParser());
 app.use(express.json());
 app.use("/api", router);
 
@@ -71,14 +75,9 @@ io.on("connection", async (socket: Socket) => {
   });
 
   socket.on("message", async (messagePayload) => {
-    console.log("Получил соообщение", messagePayload);
     const message = await messageController.createMessage(messagePayload);
     const participants = message.chat.participants;
-    console.log("participants", participants);
-    console.log("Получилось такое сообщение для отправки клиенту", message);
-
     participants.forEach((participant) => {
-      console.log("participant", participant);
       io.to(participant.toString()).emit("new-message", message);
     });
   });
