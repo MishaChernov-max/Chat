@@ -5,8 +5,6 @@ import { SocketProvider } from "../src/context/SocketContext.tsx";
 import App from "./App.tsx";
 import { persistor, store } from "./store/index.ts";
 import { PersistGate } from "redux-persist/integration/react";
-import { ThemeProvider } from "@mui/material";
-import { lightTheme } from "./theme/lightTheme.ts";
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>

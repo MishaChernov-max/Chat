@@ -1,10 +1,12 @@
 import TextField, { type TextFieldProps } from "@mui/material/TextField";
+import type { Dispatch, SetStateAction } from "react";
 
 type CustomInputType = {
   label: string;
   password?: boolean;
   error?: boolean;
   helperText?: string;
+  setValue?: Dispatch<SetStateAction<string>>;
 } & Omit<TextFieldProps, "error" | "helperText">;
 
 function CustomInput({ label, password, ...props }: CustomInputType) {

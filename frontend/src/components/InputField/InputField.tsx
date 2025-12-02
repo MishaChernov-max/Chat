@@ -6,13 +6,10 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { Input, Typography } from "@mui/material";
 import { useSendMessage } from "../../hooks/useSendMessage";
 import { useSocket } from "../../context/SocketContext";
-import { useRef, useState, type Dispatch, type SetStateAction } from "react";
-import { useParams } from "react-router-dom";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import FileAttachment from "../FileAttachment/FileAttachment";
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store";
 
 export type InputFieldType = {
   showEmoji: boolean;
@@ -38,7 +35,6 @@ function InputField({
     }
   };
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
-  const { user } = useSelector((state: RootState) => state.auth);
   const handleFileSelect = (file: File) => {
     setAttachedFile(file);
   };
@@ -46,36 +42,8 @@ function InputField({
   const removeFile = () => {
     setAttachedFile(null);
   };
-  const { id } = useParams();
   const socket = useSocket();
-  const typingTimerRef = useRef<number | null>(null);
-  const typingRef = useRef(false);
-  // const handleChange = () => {
-  //   clearTimeout(typingTimerRef.current || 0);
-  //   if (type === "chat") {
-  //     if (!typingRef.current) {
-  //       socket?.emit("typing-start:direct", { roomId, userId });
-  //       console.log("Отправляю печатает", { roomId, userId });
-  //       typingRef.current = true;
-  //     }
-  //     typingTimerRef.current = setTimeout(() => {
-  //       socket?.emit("typing-stop:direct", { roomId, userId });
-  //       typingRef.current = false;
-  //     }, 3000);
-  //   }
-  // if (type === "group") {
-  //   if (!typingRef.current) {
-  //     socket?.emit("typing-start:group", { roomId, userId });
-  //     console.log("roomId, userId", { roomId, userId });
-  //     typingRef.current = true;
-  //   }
-  //   typingTimerRef.current = setTimeout(() => {
-  //     socket?.emit("typing-stop:group", { roomId, userId });
-  //     typingRef.current = false;
-  //   }, 3000);
-  // }
-  // };
-  const { sendMessage, roomId, userId, sendFileMessage } = useSendMessage();
+  const { sendMessage } = useSendMessage();
   return (
     <>
       <Box

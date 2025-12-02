@@ -7,7 +7,6 @@ import Delete from "@mui/icons-material/Delete";
 import Share from "@mui/icons-material/Forward";
 import EditIcon from "@mui/icons-material/Edit";
 import ContentCopy from "@mui/icons-material/ContentCopy";
-import ContentPaste from "@mui/icons-material/ContentPaste";
 import RedoIcon from "@mui/icons-material/Redo";
 import useDeleteMessage from "../../hooks/useDeleteMessage";
 import type { Dispatch, SetStateAction } from "react";
@@ -99,7 +98,7 @@ export default function IconMenu({
         </MenuItem>
         <MenuItem
           onClick={() => {
-            if (!forwardedFrom && user?._id === message.id) {
+            if (!forwardedFrom && user?._id === message._id) {
               handleClickEditMessage();
             }
           }}

@@ -1,12 +1,8 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { MessageType } from "../../components/Message/Message";
 import type { RootState } from "..";
 import { useSelector } from "react-redux";
-import { getChatMessages, type ParamsRequest } from "../../api/messages";
+import { getChatMessages } from "../../api/messages";
 
 export type MessagesCacheType = {
   messages: MessageType[];
@@ -62,7 +58,6 @@ export const messageSlice = createSlice({
       const chatMessages = state.messagesCache[message.chat._id];
       if (chatMessages) {
         chatMessages.messages = [...chatMessages.messages, message];
-        //Замена ссылки на массив для компонента который использует этот массив сообщений
         if (state.roomId === message.chat._id) {
           state.messages = chatMessages.messages;
         }
@@ -91,7 +86,6 @@ export const messageSlice = createSlice({
       state.isLoading = false;
       //Получение сообщений
       state.messages = action.payload;
-
       //Обновляю кэш
       const chatId = action.meta.arg;
       //Обновляю RoomId

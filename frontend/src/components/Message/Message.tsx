@@ -39,8 +39,7 @@ export type ContextMenuType = {
   mouseY: number;
 };
 const Message = forwardRef<HTMLDivElement, MessageType>((message, ref) => {
-  const { _id, text, sender, createdAt, forwardedFrom, isEdited, updatedAt } =
-    message;
+  const { _id, text, sender, createdAt, forwardedFrom, isEdited } = message;
   const dateTime = formatTime(createdAt || "");
   const { isLoading } = useSelector((state: RootState) => state.messageSlice);
   const { user } = useSelector((state: RootState) => state.auth);

@@ -3,7 +3,7 @@ export type StatusWrapperType = {
   isError: string | null;
   children: React.ReactNode;
 };
-function StatusWrapper({ isLoading, isError, children }: StatusWrapperType) {
+function StatusWrapper({ children }: StatusWrapperType) {
   // if (isLoading) {
   //   return <h2>Идет загрузка...</h2>;
   // }

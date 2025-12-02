@@ -192,7 +192,7 @@ function MenuBar({ sx }: MenuBarPropsType) {
         <Box sx={{ transform: "rotate(90deg)", mb: 6 }}>
           <MaterialUISwitch
             checked={isDark}
-            onChange={(e, checked) => setIsDark(checked)}
+            onChange={(_, checked) => setIsDark(checked)}
           />
         </Box>
         <EditProfileModal open={open} onClose={() => setOpen(false)} />

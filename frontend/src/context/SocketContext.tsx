@@ -35,8 +35,6 @@ type NotificationData = {
 
 export const SocketContext = createContext<Socket | null>(null);
 
-// const serverPort = VITE_SERVER_PORT.env ||
-
 export const SocketProvider = ({ children }: SocketContextProviderType) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -97,21 +95,7 @@ export const SocketProvider = ({ children }: SocketContextProviderType) => {
     };
   }, [socket, chat?._id]);
   return (
-    <SocketContext.Provider value={socket}>
-      {children}
-      <Slide in={open} direction="down">
-        <Snackbar
-          open={open}
-          onClose={() => setOpen(false)}
-          autoHideDuration={4500}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-          message={`${currentNotification?.from}:${currentNotification?.text}`}
-        />
-      </Slide>
-    </SocketContext.Provider>
+    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
   );
 };
 export const useSocket = () => {

@@ -7,7 +7,7 @@ import { useEffect } from "react";
 export const useChat = (id: string) => {
   const dispatch = useDispatch<AppDispatch>();
   const { replaceChat } = useActions();
-  const { chatLoading, chatError, chatCache } = useSelector(
+  const { isLoading, isError, chatCache } = useSelector(
     (state: RootState) => state.chats
   );
   useEffect(() => {
@@ -18,5 +18,5 @@ export const useChat = (id: string) => {
       replaceChat(currentChat);
     }
   }, [id, dispatch, chatCache]);
-  return { chatLoading, chatError };
+  return { isLoading, isError };
 };

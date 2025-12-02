@@ -10,6 +10,7 @@ const baseurl = import.meta.env.VITE_API_CONFIG || "http://localhost:5000/api";
 const instance = axios.create({
   baseURL: baseurl,
   timeout: 5000,
+  withCredentials: true,
 });
 
 instance.interceptors.request.use((config) => {
@@ -25,13 +26,7 @@ instance.interceptors.request.use((config) => {
 });
 
 export const refreshTokenApi = async (): Promise<{ data: string }> => {
-  const response = await instance.post(
-    `/refresh`,
-    {},
-    {
-      withCredentials: true,
-    }
-  );
+  const response = await instance.post(`/auth/refresh`, {});
   return { data: response.data.token };
 };
 
@@ -41,6 +36,9 @@ instance.interceptors.response.use(
     try {
       const originalRequest = error.config;
       console.log("error", error);
+      if (originalRequest?.url?.includes("/auth/refresh")) {
+        return Promise.reject(error);
+      }
       if (error?.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         const accessToken = getLocalStorage("accessToken");
@@ -48,7 +46,9 @@ instance.interceptors.response.use(
           window.location.href = "/loginPage";
         }
         const response = await refreshTokenApi();
+        console.log("Сервер вернул новый токен:Ответ", response);
         const newAccessToken = response.data;
+        console.log("newAccessToken", newAccessToken);
         if (newAccessToken) {
           await setLocalStorage("accessToken", newAccessToken);
           originalRequest.headers.authorization = `Bearer ${newAccessToken}`;

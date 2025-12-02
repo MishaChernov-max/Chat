@@ -12,8 +12,7 @@ export type FriendMessageType = {
 
 const FriendMessage = forwardRef<HTMLDivElement, FriendMessageType>(
   ({ message }, ref) => {
-    const { _id, text, sender, chat, createdAt, forwardedFrom, isEdited } =
-      message;
+    const { _id, text, sender, createdAt, forwardedFrom, isEdited } = message;
     const dateTime = formatTime(createdAt || "");
     const [contextMenu, setContextMenu] = useState<ContextMenuType | null>(
       null
